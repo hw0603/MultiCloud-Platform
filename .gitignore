@@ -270,3 +270,6 @@ $RECYCLE.BIN/
 
 # Visual Studio Code
 .vscode
+
+# Misc
+runserver.py
