@@ -253,7 +253,7 @@ ehthumbs_vista.db
 *.stackdump
 
 # Folder config file
-[Dd]esktop.ini
+Desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
