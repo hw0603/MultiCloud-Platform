@@ -1,6 +1,6 @@
 import datetime
 
-from config.database_config import Base
+from db.session import Base
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String
 
 

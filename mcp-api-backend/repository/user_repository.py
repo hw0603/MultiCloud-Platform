@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
-import src.users.infrastructure.models as models
+import db.model.user_model as models
 
+Usermodel = models.User
 
 def get_user_by_username(db: Session, username: str):
     try:
-        return db.query(models.User).filter(models.User.username == username).first()
+        return db.query(Usermodel).filter(Usermodel.username == username).first()
     except Exception as err:
         raise err
