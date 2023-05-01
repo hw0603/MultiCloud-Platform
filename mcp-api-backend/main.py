@@ -1,16 +1,14 @@
-from src.shared.security import deps
-from fastapi import Depends, FastAPI
-from sqlalchemy.orm import Session
-from sqlalchemy import inspect
-from src.users.infrastructure import repositories
+from fastapi import FastAPI
+from api.v1.route import api_router
 
 
-app = FastAPI()
-
-def object_as_dict(obj):
-    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
+app = FastAPI(
+    title="Multi Cloud Platform API",
+    description="퍼블릭 기반 멀티클라우드 플랫폼 API 서버",
+    version="1.0.0",
+)
+app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/")
-def get_userinfo_from_db(db: Session = Depends(deps.get_db)):
-    user = repositories.get_user_by_username(db, "admin")
-    return object_as_dict(user)
+def main():
+    return {"message": "API Server main page"}
