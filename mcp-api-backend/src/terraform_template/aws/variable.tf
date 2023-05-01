@@ -28,6 +28,20 @@ variable "aws_public_key_name" {
 }
 
 
+# vpc
+variable "aws_vpc_cidr" {
+    type = string
+    description = "허용된 CIDR 블록 사이즈는 입니다."
+    default = "10.0.0.0/16"
+}
+
+variable "aws_vpc_name" {
+    type = string
+    description = "VPC 이름을 특수문자 없이 입력하세요."
+    default = "aws vpc name"
+}
+
+
 # subnet
 variable "aws_subnet_name" {
     type = string
