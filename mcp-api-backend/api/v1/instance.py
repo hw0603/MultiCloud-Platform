@@ -6,6 +6,15 @@ from config.api_config import settings  # for testing
 
 router = APIRouter()
 
+EC2_Cloudwatch_Metrics = {
+    "StatusCheckFailed_System", "StatusCheckFailed_Instance", "StatusCheckFailed",
+    "CPUUtilization",
+    "EBSReadBytes", "EBSWriteBytes", "EBSReadOps", "EBSWriteOps", "EBSByteBalance%", "EBSIOBalance%",
+    "NetworkPacketsIn", "NetworkPacketsOut", "NetworkIn", "NetworkOut",
+    "MetadataNoToken"
+}
+
+
 @router.get("/{instance_id}")
 def get_instance_state(instance_id: str, metrics: Optional[List[str]] = Query(None)):
     ''' 사용자로부터 조회할 지표들을 받아서 조회 결과를 반환 '''
@@ -14,6 +23,10 @@ def get_instance_state(instance_id: str, metrics: Optional[List[str]] = Query(No
     AWS_ACCESS_KEY_ID = settings.AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY = settings.AWS_SECRET_ACCESS_KEY
     AWS_DEFAULT_REGION = 'ap-northeast-2'
+
+    # query param 리스트 validation
+    if not (all(m in EC2_Cloudwatch_Metrics for m in metrics)):
+        return ApiResponse(ApiStatus.BAD_REQUEST, "Cloudwatch 지표가 아닌 지표가 포함되어 있습니다.")
 
     state = instance_service.get_instance_state(
         AWS_ACCESS_KEY_ID,
