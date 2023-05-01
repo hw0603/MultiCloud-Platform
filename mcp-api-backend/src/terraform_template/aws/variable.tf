@@ -86,3 +86,67 @@ variable "aws_security_group_name" {
     description = "SECURITY GROUP 이름을 특수문자 없이 입력하세요."
     default = "aws security group name"
 }
+
+
+# inbound from port
+variable "aws_inbound_from_port" {
+    type = number
+    description = "Inbound 의 from Port 를 입력하세요."
+    default = 80
+}
+
+
+# inbound to port
+variable "aws_inbound_to_port" {
+    type = number
+    description = "Inbound 의 to Port 를 입력하세요."
+    default = 80
+}
+
+
+# outbound from port
+variable "aws_outbound_from_port" {
+    type = number
+    description = "Outbound 의 from Port 를 입력하세요."
+    default = 80
+}
+
+
+# outbound to port
+variable "aws_outbound_port_to_port" {
+    type = number
+    description = "Outbound 의 to Port 를 입력하세요."
+    default = 80
+}
+
+
+# inbound protocol
+variable "aws_inbound_protocol" {
+    type = string
+    description = "Inbound Protocol 을 입력하세요."
+    default = "tcp"
+}
+
+
+# outbound protocol
+variable "aws_outbound_protocol" {
+    type = string
+    description = "Outbound Protocol 을 입력하세요."
+    default = "tcp"
+}
+
+
+# inbound cidr
+variable "aws_inbound_cidr" {
+    type = string
+    description = "Inbound Cidr 을 입력하세요."
+    default = "0.0.0.0/0"
+}
+
+
+# outbound cidr
+variable "aws_outbound_cidr" {
+    type = string
+    description = "Outbound Cidr 을 입력하세요."
+    default = "0.0.0.0/0"
+}
