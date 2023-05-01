@@ -23,7 +23,7 @@ resource "aws_internet_gateway" "igw" {
 # NAT Gateway
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.nat_gateway.id
-  subnet_id     = aws_subnet1.id
+  subnet_id     = aws_subnet.subnet1.id
   depends_on    = [aws_internet_gateway.igw]
 
   tags = {
@@ -39,3 +39,4 @@ resource "aws_eip" "nat_gateway" {
     Name = var.aws_nat_gateway_eip_name
   }
 }
+
