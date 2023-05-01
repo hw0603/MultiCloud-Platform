@@ -39,6 +39,8 @@ def get_instance_state(instance_id: str, metrics: Optional[List[str]] = Query(No
     # query param 리스트 validation
     if not (all(m in EC2_Cloudwatch_Metrics for m in metrics)):
         return ApiResponse(ApiStatus.BAD_REQUEST, "Cloudwatch 지표가 아닌 지표가 포함되어 있습니다.")
+    if not metrics:
+        return ApiResponse(ApiStatus.BAD_REQUEST, "지표가 전달되지 않았습니다.")
 
     state = instance_service.get_instance_state(
         AWS_ACCESS_KEY_ID,
