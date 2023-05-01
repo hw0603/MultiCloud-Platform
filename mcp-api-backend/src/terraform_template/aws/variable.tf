@@ -48,3 +48,11 @@ variable "aws_subnet_name" {
     description = "SUBNET 이름을 특수문자 없이 입력하세요."
     default = "aws subnet name"
 }
+
+
+# Internet Gateway
+variable "aws_internet_gateway_name" {
+    type = string
+    description = "INTERNET GATEWAY 이름을 특수문자 없이 입력하세요."
+    default = "aws igw name"
+}
