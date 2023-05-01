@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 from api.v1.route import api_router
+from db.session import engine
+from db.model import user_model
 
+
+# DB 테이블 생성
+user_model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Multi Cloud Platform API",

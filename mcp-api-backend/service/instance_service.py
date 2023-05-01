@@ -85,3 +85,23 @@ def get_instance_state():
     """
 
     return f"CPU사용량: {load}% - {timestamp}"
+
+
+def get_instance_list(id, secret, region):
+    # AWS EC2 연결 설정
+    client_ec2 = boto3.client(
+        'ec2',
+        aws_access_key_id=id,
+        aws_secret_access_key=secret,
+        region_name=region
+    )
+
+    response = client_ec2.describe_instances()  # Amazon EC2의 모든 인스턴스 정보를 가져옴
+
+    instance_list = []
+    for reservation in response["Reservations"]:
+        for instance in reservation["Instances"]:
+            instance_list.append(instance["InstanceId"])
+
+    return instance_list
+
