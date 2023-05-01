@@ -70,3 +70,11 @@ variable "aws_nat_gateway_eip_name" {
     description = "NAT GATEWAY EIP 이름을 특수문자 없이 입력하세요."
     default = "aws nat-igw-eip name"
 }
+
+
+# Route Table
+variable "aws_route_table_name" {
+    type = string
+    description = "ROUTE TABLE 이름을 특수문자 없이 입력하세요."
+    default = "aws rt name"
+}

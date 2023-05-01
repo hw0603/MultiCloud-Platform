@@ -9,6 +9,7 @@ resource "aws_vpc" "vpc" {
     }
 }
 
+
 # Subnet
 resource "aws_subnet" "subnet1" {
     vpc_id = aws_vpc.vpc.id
@@ -81,3 +82,54 @@ resource "aws_eip" "nat_gateway" {
   }
 }
 
+
+# Route Table
+# subnet public1~2
+resource "aws_route_table" "rt1" {
+    vpc_id = aws_vpc.vpc.id
+    
+    tags = {
+        Name = var.aws_route_table_name
+    }
+}
+
+resource "aws_route_table_association" "rt1" {
+    subnet_id = aws_subnet.subnet1.id
+    route_table_id = aws_route_table.rt1.id
+}
+
+resource "aws_route_table_association" "rt2" {
+    subnet_id = aws_subnet.subnet2.id
+    route_table_id = aws_route_table.rt1.id
+}
+
+resource "aws_route" "rt1" {
+  route_table_id         = aws_route_table.rt1.id
+  gateway_id             = aws_internet_gateway.igw.id
+  destination_cidr_block = "0.0.0.0/0"
+}
+
+# subnet public3~4
+resource "aws_route_table" "rt3" {
+    vpc_id = aws_vpc.vpc.id
+    
+    tags = {
+        Name = var.aws_route_table_name
+    }
+}
+
+resource "aws_route_table_association" "rt3" {
+    subnet_id = aws_subnet.subnet3.id
+    route_table_id = aws_route_table.rt3.id
+}
+
+resource "aws_route_table_association" "rt4" {
+    subnet_id = aws_subnet.subnet4.id
+    route_table_id = aws_route_table.rt4.id
+}
+
+resource "aws_route" "rt3" {
+  route_table_id         = aws_route_table.rt3.id
+  gateway_id             = aws_internet_gateway.igw.id
+  destination_cidr_block = "0.0.0.0/0"
+}
