@@ -78,3 +78,11 @@ variable "aws_route_table_name" {
     description = "ROUTE TABLE 이름을 특수문자 없이 입력하세요."
     default = "aws rt name"
 }
+
+
+# security_group
+variable "aws_security_group_name" {
+    type = string
+    description = "SECURITY GROUP 이름을 특수문자 없이 입력하세요."
+    default = "aws security group name"
+}
