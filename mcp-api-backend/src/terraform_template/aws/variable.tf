@@ -150,3 +150,9 @@ variable "aws_outbound_cidr" {
     description = "Outbound Cidr 을 입력하세요."
     default = "0.0.0.0/0"
 }
+
+# bastion
+variable "aws_bastion_eip" {
+    type = string
+    default = "aws bastion eip name"
+}
