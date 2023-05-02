@@ -156,3 +156,27 @@ variable "aws_bastion_eip" {
     type = string
     default = "aws bastion eip name"
 }
+
+variable "aws_bastion_ami" {
+    type = string
+    default = "ami-02c3627b04781eada"
+}
+
+variable "aws_bastion_instance_type" {
+    type = string
+    default = "t2.micro"
+}
+
+variable "aws_bastion_key_name" {
+    type = string
+    default = "tokyo-ec2-key"
+}
+
+variable "aws_bastion_volumne_size" {
+    default = 8
+}
+
+variable "aws_bastion_ec2_name" {
+    type = string
+    default = "aws bastion ec2 name"
+}
