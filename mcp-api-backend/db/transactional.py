@@ -15,9 +15,9 @@ class Transactional:
     def __call__(self, func):
         @wraps(func)
         async def _transactional(*args, **kwargs):
+            db_session = AsyncSessionLocal
             try:
                 result = await func(*args, **kwargs)
-                db_session = AsyncSessionLocal
                 await db_session.commit()
             except Exception as e:
                 await db_session.rollback()
