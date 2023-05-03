@@ -11,12 +11,14 @@ class ApiStatus:
     ERROR: int = 500
 
 class ApiResponse:
-    def __init__(self, status: ApiStatus, message: str):
+    data: object = None
+    
+    def __init__(self, status: int, message: str):
         self.status = status
         self.message = message
 
     @classmethod
-    def with_data(cls, status: ApiStatus, message: str, data: object):
+    def with_data(cls, status: int, message: str, data: object):
         response = cls(status, message)
         response.data = data
         return response
