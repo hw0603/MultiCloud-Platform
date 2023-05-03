@@ -1,10 +1,17 @@
 import boto3
 import datetime
+from db.transactional import Transactional
+from db.model.aws_cloudwatch_model import AwsCloudwatch
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+from db.connection import get_db, get_async_db
+from repository import aws_cloudwatch_repository as awsCloudwatchRepository
+import random
 
 
-def get_instance_state(id: str, secret: str, region: str, instanceId: str, metrics: list):
+async def get_instance_state(id: str, secret: str, region: str, instanceId: str, metrics: list, db: AsyncSession):
     now = datetime.datetime.utcnow()  # 현재 시각 (UTC 포맷)
-    past = now - datetime.timedelta(minutes=60)  # 60분의 timedelta
+    past = now - datetime.timedelta(minutes=600)  # 600분의 timedelta
 
     # AWS Cloudwatch 연결 설정
     client_cw = boto3.client(
@@ -39,7 +46,15 @@ def get_instance_state(id: str, secret: str, region: str, instanceId: str, metri
         # timestamp = str(last_datapoint['Timestamp'])
 
         result.update({metric: datapoints})
-
+    
+    # DB에 저장
+    for metric in result:
+        for datapoint in result[metric]:
+            await awsCloudwatchRepository.createAwsCloudwatch(
+                db=db,
+                instance_id=instanceId, provider_id=random.randint(0, 100000), metric=metric,
+                timestamp=datapoint['Timestamp'], value=datapoint['Average'], unit=datapoint['Unit']
+            )
     return result
 
 
