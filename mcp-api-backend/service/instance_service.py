@@ -6,12 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
 from db.connection import get_db, get_async_db
 from repository import aws_cloudwatch_repository as awsCloudwatchRepository
-import random
+import logging
+import pytz
 
+logger = logging.getLogger("uvicorn")
+UTC = pytz.timezone('UTC')
+KST = pytz.timezone('Asia/Seoul')
 
 async def get_instance_state(id: str, secret: str, region: str, instanceId: str, metrics: list, db: AsyncSession):
+    # 가장 최근 업데이트된 시각 조회 후 조회 범위 설정
+    last_updated_time = await awsCloudwatchRepository.getLastUpdatedTime(db=db, instance_id=instanceId)
     now = datetime.datetime.utcnow()  # 현재 시각 (UTC 포맷)
-    past = now - datetime.timedelta(minutes=600)  # 600분의 timedelta
+    past = last_updated_time if last_updated_time else now - datetime.timedelta(minutes=600)
+    logger.info(f'last_updated_time: {last_updated_time}, now: {now}, past: {past}')
 
     # AWS Cloudwatch 연결 설정
     client_cw = boto3.client(
@@ -28,8 +35,8 @@ async def get_instance_state(id: str, secret: str, region: str, instanceId: str,
             Namespace='AWS/EC2',
             MetricName=metric,
             Dimensions=[{'Name': 'InstanceId', 'Value': instanceId}],
-            StartTime=past,
-            EndTime=now,
+            StartTime=past,  # UTC
+            EndTime=now,  # UTC
             Period=60,
             Statistics=['Average']
         )
@@ -50,11 +57,22 @@ async def get_instance_state(id: str, secret: str, region: str, instanceId: str,
     # DB에 저장
     for metric in result:
         for datapoint in result[metric]:
-            await awsCloudwatchRepository.createAwsCloudwatch(
-                db=db,
-                instance_id=instanceId, provider_id=random.randint(0, 100000), metric=metric,
-                timestamp=datapoint['Timestamp'], value=datapoint['Average'], unit=datapoint['Unit']
+            datapoint['Timestamp'] += datetime.timedelta(hours=9)  # KST로 변환
+            datapoint['Timestamp'] = KST.localize(datapoint['Timestamp'].replace(tzinfo=None))
+            
+            check = await awsCloudwatchRepository.getAwsCloudwatch(
+                db=db, instance_id=instanceId,
+                provider_id=12345, metric=metric,
+                timestamp=datapoint['Timestamp']
             )
+            if (check):
+                logger.warn(f'Already exists: {instanceId}, {metric}, {datapoint["Timestamp"]}')
+            else:
+                await awsCloudwatchRepository.createAwsCloudwatch(
+                    db=db,
+                    instance_id=instanceId, provider_id=12345, metric=metric,  # TODO: provider_id FK 지정해야 함
+                    timestamp=datapoint['Timestamp'], value=datapoint['Average'], unit=datapoint['Unit']
+                )
     return result
 
 
