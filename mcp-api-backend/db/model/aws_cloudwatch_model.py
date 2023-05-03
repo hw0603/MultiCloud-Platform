@@ -4,9 +4,8 @@ from sqlalchemy import Column, DateTime, Integer, Float, String, PrimaryKeyConst
 
 class AwsCloudwatch(Base):
     __tablename__ = "aws_cloudwatch"
-    __table_args__ = (PrimaryKeyConstraint('id', 'instance_id', 'provider_id'), )  # 복합키
+    __table_args__ = (PrimaryKeyConstraint('instance_id', 'provider_id', 'metric', 'timestamp'), )  # 복합키
 
-    id = Column(Integer, autoincrement=True)
     instance_id = Column(String(50), index=True, nullable=False)
     provider_id = Column(Integer, index=True, nullable=False)  # TODO: FK 지정해야 함
     metric = Column(String(50), nullable=False)
