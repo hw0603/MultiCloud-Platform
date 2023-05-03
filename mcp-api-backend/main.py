@@ -1,12 +1,8 @@
 from fastapi import FastAPI
 from api.v1.route import api_router
-from db.session import engine
+from db.session import async_engine, engine
 from db.model import user_model, aws_cloudwatch_model
 
-
-# DB 테이블 생성
-user_model.Base.metadata.create_all(bind=engine)
-aws_cloudwatch_model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Multi Cloud Platform API",
@@ -14,6 +10,17 @@ app = FastAPI(
     version="1.0.0",
 )
 app.include_router(api_router, prefix="/api/v1")
+
+
+# DB 테이블 생성
+# user_model.Base.metadata.create_all(bind=engine)
+# aws_cloudwatch_model.Base.metadata.create_all(bind=engine)
+@app.on_event("startup")
+async def init_tables():
+    async with async_engine.begin() as conn:
+        await conn.run_sync(user_model.Base.metadata.create_all)
+        await conn.run_sync(aws_cloudwatch_model.Base.metadata.create_all)
+
 
 @app.get("/")
 def main():

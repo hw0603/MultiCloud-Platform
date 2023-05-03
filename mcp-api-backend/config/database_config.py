@@ -5,6 +5,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     SECRET_KEY: str = os.getenv("SECRET_KEY", "Key")
     DB_ENGINE: str = os.getenv("DB_ENGINE", "mysql")
+    DB_ENGINE_ASYNC: str = os.getenv("DB_ENGINE_ASYNC", "mysql+aiomysql")
     DB_NAME: str = os.getenv("DB_NAME", "mcp")
     DB_HOST: str = os.getenv("DB_HOST", "localhost")
     DB_PORT: int = os.getenv("DB_PORT", 3306)
