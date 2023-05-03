@@ -4,11 +4,11 @@ import json
 
 @dataclass
 class ApiStatus:
-    SUCCESS = 200
-    BAD_REQUEST = 400
-    UNAUTHORIZED = 401
-    NOT_FOUND = 404
-    ERROR = 500
+    SUCCESS: int = 200
+    BAD_REQUEST: int = 400
+    UNAUTHORIZED: int = 401
+    NOT_FOUND: int = 404
+    ERROR: int = 500
 
 class ApiResponse:
     def __init__(self, status: ApiStatus, message: str):
