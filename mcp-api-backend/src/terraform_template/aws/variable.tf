@@ -1,11 +1,13 @@
 # access_key
 variable "aws_access_key" {
     type = string
+    default = ""
 }
 
 # secret_key
 variable "aws_secret_key" {
     type = string
+    default = ""
 }
 
 # region
@@ -14,17 +16,24 @@ variable "aws_region" {
     default = "ap-northeast-2"
 }
 
+# subnet region
+variable "aws_subnet_region" {
+    type = string
+    default = "ap-northeast-2a"
+}
+
 
 # key_name
 variable "aws_key_name" {
     type = string
-    default = "web_admin"
+    default = "key-pair"
 }
 
 # public_key
 variable "aws_public_key_name" {
     type = string
     description = "SSH 키를 입력해주세요."
+    default = "key-04267ebefb1c15928"
 }
 
 
@@ -40,6 +49,13 @@ variable "aws_vpc_name" {
     description = "VPC 이름을 특수문자 없이 입력하세요."
     default = "aws vpc name"
 }
+
+
+# CIDR
+variable "aws_cidr1"    { default = "10.0.0.0/24" }
+variable "aws_cidr2"    { default = "10.0.1.0/24" }
+variable "aws_cidr3"    { default = "10.0.2.0/24" }
+variable "aws_cidr4"    { default = "10.0.3.0/24" }
 
 
 # subnet
@@ -113,7 +129,7 @@ variable "aws_outbound_from_port" {
 
 
 # outbound to port
-variable "aws_outbound_port_to_port" {
+variable "aws_outbound_to_port" {
     type = number
     description = "Outbound 의 to Port 를 입력하세요."
     default = 80
@@ -159,7 +175,7 @@ variable "aws_bastion_eip" {
 
 variable "aws_bastion_ami" {
     type = string
-    default = "ami-02c3627b04781eada"
+    default = "ami-04cebc8d6c4f297a3"
 }
 
 variable "aws_bastion_instance_type" {
@@ -169,7 +185,7 @@ variable "aws_bastion_instance_type" {
 
 variable "aws_bastion_key_name" {
     type = string
-    default = "tokyo-ec2-key"
+    default = "key-pair"
 }
 
 variable "aws_bastion_volumne_size" {

@@ -13,9 +13,9 @@ resource "aws_vpc" "vpc" {
 # Subnet
 resource "aws_subnet" "subnet1" {
     vpc_id = aws_vpc.vpc.id
-    cir_block = var.aws_vpc_cidr
+    cidr_block = var.aws_cidr1
     map_public_ip_on_launch = true
-    availability_zone = var.aws_region
+    availability_zone = var.aws_subnet_region
     tags = {
         Name = var.aws_subnet_name
     }
@@ -23,9 +23,9 @@ resource "aws_subnet" "subnet1" {
 
 resource "aws_subnet" "subnet2" {
     vpc_id = aws_vpc.vpc.id
-    cidr_block = var.aws_vpc_cidr
+    cidr_block = var.aws_cidr2
     map_public_ip_on_launch = true
-    availability_zone = var.aws_region
+    availability_zone = var.aws_subnet_region
     tags = {
         Name = var.aws_subnet_name
     }
@@ -33,9 +33,9 @@ resource "aws_subnet" "subnet2" {
 
 resource "aws_subnet" "subnet3" {
     vpc_id = aws_vpc.vpc.id
-    cidr_block = var.aws_vpc_cidr
-    map_public_ip_on_launch = false
-    availability_zone = var.aws_region
+    cidr_block = var.aws_cidr3
+    map_public_ip_on_launch = true
+    availability_zone = var.aws_subnet_region
     tags = {
         Name = var.aws_subnet_name
     }
@@ -43,9 +43,9 @@ resource "aws_subnet" "subnet3" {
 
 resource "aws_subnet" "subnet4" {
     vpc_id = aws_vpc.vpc.id
-    cidr_block = var.aws_vpc_cidr
-    map_public_ip_on_launch = false
-    availability_zone = var.aws_region
+    cidr_block = var.aws_cidr4
+    map_public_ip_on_launch = true
+    availability_zone = var.aws_subnet_region
     tags = {
         Name = var.aws_subnet_name
     }
@@ -125,7 +125,7 @@ resource "aws_route_table_association" "rt3" {
 
 resource "aws_route_table_association" "rt4" {
     subnet_id = aws_subnet.subnet4.id
-    route_table_id = aws_route_table.rt4.id
+    route_table_id = aws_route_table.rt3.id
 }
 
 resource "aws_route" "rt3" {

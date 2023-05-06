@@ -10,7 +10,7 @@ resource "aws_eip" "bastion" {
 resource "aws_instance" "bastion" {
     ami = var.aws_bastion_ami
     instance_type = var.aws_bastion_instance_type
-    security_group = [aws_security_group.security_group.id]
+    security_groups = [aws_security_group.security_group.id]
     subnet_id = aws_subnet.subnet1.id
     key_name = var.aws_bastion_key_name
     disable_api_termination = true
