@@ -18,7 +18,12 @@ async def get_instance_state(id: str, secret: str, region: str, instanceId: str,
     last_updated_time = await awsCloudwatchRepository.getLastUpdatedTime(db=db, instance_id=instanceId)
     now = datetime.datetime.utcnow()  # 현재 시각 (UTC 포맷)
     past = last_updated_time if last_updated_time else now - datetime.timedelta(minutes=600)
-    logger.info(f'last_updated_time: {last_updated_time}, now: {now}, past: {past}')
+    past = max(now - datetime.timedelta(minutes=600), past)  # TODO: 현재 임시로 max 값을 취함. 실 서비스 시 여러 번 호출해서 데이터를 누적해야 함
+    logger.info(f'last_updated_time: {last_updated_time}, {past} 에서 {now} 사이의 데이터를 조회합니다.')
+
+    """
+    오랜만에 업데이트 하는 경우.. 요청 엔트리 개수가 초과될 수 있음. 처리해야 함
+    """
 
     # AWS Cloudwatch 연결 설정
     client_cw = boto3.client(
@@ -43,15 +48,6 @@ async def get_instance_state(id: str, secret: str, region: str, instanceId: str,
 
         # 통계치 조회 결과
         datapoints = stats['Datapoints']
-
-        # last_datapoint = sorted(datapoints, key=itemgetter('Timestamp'))[-1]    # Last result
-
-        # # Last utilization
-        # utilization = last_datapoint['Average']
-
-        # # Last utilization timestamp
-        # timestamp = str(last_datapoint['Timestamp'])
-
         result.update({metric: datapoints})
     
     # DB에 저장
@@ -62,11 +58,11 @@ async def get_instance_state(id: str, secret: str, region: str, instanceId: str,
             
             check = await awsCloudwatchRepository.getAwsCloudwatch(
                 db=db, instance_id=instanceId,
-                provider_id=12345, metric=metric,
+                provider_id=12345, metric=metric,  # TODO: provider_id FK 지정해야 함
                 timestamp=datapoint['Timestamp']
             )
             if (check):
-                logger.warn(f'Already exists: {instanceId}, {metric}, {datapoint["Timestamp"]}')
+                logger.warn(f'이미 존재하는 엔트리: {instanceId}, {metric}, {datapoint["Timestamp"]}')
             else:
                 await awsCloudwatchRepository.createAwsCloudwatch(
                     db=db,
