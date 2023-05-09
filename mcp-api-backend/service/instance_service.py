@@ -20,7 +20,10 @@ async def get_instance_state(id: str, secret: str, region: str, instanceId: str,
     now = datetime.datetime.utcnow()  # 현재 시각 (UTC 포맷)
     past = last_updated_time if last_updated_time else now - datetime.timedelta(minutes=600)
     past = max(now - datetime.timedelta(minutes=600), past)  # TODO: 현재 임시로 max 값을 취함. 실 서비스 시 여러 번 호출해서 데이터를 누적해야 함
-    logger.info(f'last_updated_time: {last_updated_time+d}, {past+d} 에서 {now+d} 사이의 데이터를 조회합니다.')
+
+    if (last_updated_time):
+        logger.info(f'last_updated_time: {last_updated_time+d}')
+    logger.info(f'{past+d} 에서 {now+d} 사이의 데이터를 조회합니다.')
 
     """
     오랜만에 업데이트 하는 경우.. 요청 엔트리 개수가 초과될 수 있음. 처리해야 함
