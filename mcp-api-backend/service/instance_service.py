@@ -12,14 +12,15 @@ import pytz
 logger = logging.getLogger("uvicorn")
 UTC = pytz.timezone('UTC')
 KST = pytz.timezone('Asia/Seoul')
+d = datetime.timedelta(hours=9)
 
 async def get_instance_state(id: str, secret: str, region: str, instanceId: str, metrics: list, db: AsyncSession):
     # 가장 최근 업데이트된 시각 조회 후 조회 범위 설정
-    last_updated_time = await awsCloudwatchRepository.getLastUpdatedTime(db=db, instance_id=instanceId)
+    last_updated_time = await awsCloudwatchRepository.getLastUpdatedTime(db=db, instance_id=instanceId)  # UTC 기준
     now = datetime.datetime.utcnow()  # 현재 시각 (UTC 포맷)
     past = last_updated_time if last_updated_time else now - datetime.timedelta(minutes=600)
     past = max(now - datetime.timedelta(minutes=600), past)  # TODO: 현재 임시로 max 값을 취함. 실 서비스 시 여러 번 호출해서 데이터를 누적해야 함
-    logger.info(f'last_updated_time: {last_updated_time}, {past} 에서 {now} 사이의 데이터를 조회합니다.')
+    logger.info(f'last_updated_time: {last_updated_time+d}, {past+d} 에서 {now+d} 사이의 데이터를 조회합니다.')
 
     """
     오랜만에 업데이트 하는 경우.. 요청 엔트리 개수가 초과될 수 있음. 처리해야 함
@@ -35,7 +36,8 @@ async def get_instance_state(id: str, secret: str, region: str, instanceId: str,
 
     result = {}
     for metric in metrics:
-        # instanceId에 대해 metrics를 설정하여 60분간의 평균값을 가져옴
+        # instanceId에 대해 metrics를 설정하여 60s 간격의 데이터를 가져옴
+        # Cloudwatch API 상, 60s 간격의 데이터는 15일동안만 유효하고, 그 이후 기간에는 해상도가 낮아진(ex 5분) 채로 유지됨
         stats = client_cw.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName=metric,
@@ -53,7 +55,7 @@ async def get_instance_state(id: str, secret: str, region: str, instanceId: str,
     # DB에 저장
     for metric in result:
         for datapoint in result[metric]:
-            datapoint['Timestamp'] += datetime.timedelta(hours=9)  # KST로 변환
+            datapoint['Timestamp'] += datetime.timedelta(hours=9)  # 저장할 데이터를 KST로 변환
             datapoint['Timestamp'] = KST.localize(datapoint['Timestamp'].replace(tzinfo=None))
             
             check = await awsCloudwatchRepository.getAwsCloudwatch(
