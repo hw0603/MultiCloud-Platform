@@ -10,30 +10,37 @@ export const links = [
       links: [
         {
           name: '대시보드',
+          value: 'dashboard',
           icon: <BsFillBarChartFill />,
         },
         {
           name: '사용자',
+          value: 'user',
           icon: <HiUserGroup />,
         },
         {
           name: '스택',
+          value: 'stack',
           icon: <AiFillDatabase />,
         },
         {
           name: '배포',
+          value: 'deploy',
           icon: <TbPackageExport />,
         },
         {
           name: '작업 로그',
+          value: 'opLog',
           icon: <BsFillChatDotsFill />,
         },
         {
           name: '활동 로그',
+          value: 'log',
           icon: <BsFillChatDotsFill />,
         },
         {
           name: '설정',
+          value: 'setting',
           icon: <AiTwotoneSetting />,
         },
       ],
@@ -44,16 +51,17 @@ export const links = [
       links: [
         {
           name: 'Amazon AWS',
+          value: 'AWS',
           icon: <FaUserCircle />,
         },
-        {
-          name: 'Microsoft Azure',
-          icon: <FaUserCircle />,
-        },
-        {
-          name: 'Naver NCloud',
-          icon: <FaUserCircle />,
-        },
+        // {
+        //   name: 'Microsoft Azure',
+        //   icon: <FaUserCircle />,
+        // },
+        // {
+        //   name: 'Naver NCloud',
+        //   icon: <FaUserCircle />,
+        // },
       ],
     }
 ];
