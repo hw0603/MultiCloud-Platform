@@ -10,8 +10,8 @@ resource "aws_eip" "bastion" {
 resource "aws_instance" "bastion" {
     ami = var.aws_bastion_ami
     instance_type = var.aws_bastion_instance_type
-    security_groups = [aws_security_group.security_group.id]
-    subnet_id = aws_subnet.subnet1.id
+    security_groups = data.aws_security_groups.selected_security_group.ids
+    subnet_id = data.aws_subnet.selected_subnet.id
     key_name = var.aws_bastion_key_name
     disable_api_termination = true
     root_block_device {
@@ -25,4 +25,31 @@ resource "aws_instance" "bastion" {
     tags = {
         Name = var.aws_bastion_ec2_name
     }
+}
+
+# Dependency
+data "aws_security_groups" "selected_security_group" {
+    filter {
+        name   = "tag:Name"
+        values = var.aws_security_group_name
+    }
+}
+
+data "aws_subnet" "selected_subnet" {
+  filter {
+    name   = "tag:Name"
+    values = [var.aws_subnet_name]
+  }
+}
+
+
+# Provider setting
+provider "aws" {
+    access_key = var.aws_access_key
+    secret_key = var.aws_secret_key
+    region = var.aws_region
+}
+
+terraform {
+    required_version = ">=1.0.0"
 }
