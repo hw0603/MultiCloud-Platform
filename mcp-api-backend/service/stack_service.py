@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query, Depends, HTTPException
 
 # from src.activityLogs.infrastructure import repositories as crud_activity
 # from src.shared.helpers.get_data import check_team_stack, check_providers
-from utils.utils import sync_git
+from utils.utils import sync_git, copy_template
 from src.shared.security import deps
 from entity import stack_entity as schemas_stacks
 from entity import user_entity as schemas_users
@@ -44,21 +44,31 @@ async def create_new_stack(
     # check_team_stack(db, current_user, current_user.team, stack.team_access) TODO: team_access validation 필요
     # logger.info("check_team_stack 반환...")
     
-    
-    # Push git task to queue team, all workers are subscribed to this queue
-    task = sync_git(
-        stack_name=stack.stack_name,
-        git_repo=stack.git_repo,
-        branch=branch,
-        project_path=stack.project_path,
-        environment=environment,
-        team=team,
-        name=name,
-    )
-    logger.info("sync_git 반환...")
+    # stack_type이 지정되었다면 git에서 clone하지 않고 내부 템플릿을 복사해서 사용
+    if (stack.stack_type):
+        task = copy_template(
+            stack_name=stack.stack_name,
+            stack_type=stack.stack_type,
+            environment=environment,
+            team=team,
+            name=name,
+        )
+        logger.info("copy_template 반환...")
+    else:
+        # Push git task to queue team, all workers are subscribed to this queue
+        task = sync_git(
+            stack_name=stack.stack_name,
+            git_repo=stack.git_repo,
+            branch=branch,
+            project_path=stack.project_path,
+            environment=environment,
+            team=team,
+            name=name,
+        )
+        logger.info("sync_git 반환...")
     variables_list = [i for i in task[1]["variable"].keys()]
     try:
-        # pesrsist data in db
+        # DB Persistant data
         result = crud_stacks.create_new_stack(
             db=db,
             stack=stack,
@@ -175,12 +185,14 @@ async def get_stack_by_id_or_name(
     return result
 
 
+# TODO: 내부 템플릿을 사용하는 update_stack 구현 필요
 async def update_stack(
     stack_id: int,
     stack: schemas_stacks.StackCreate,
     current_user: schemas_users.User = Depends(deps.get_current_active_user),
     db: Session = Depends(get_db),
 ):
+    raise NotImplementedError
     name = "default"
     environment = "default"
     team = "team"
@@ -196,7 +208,7 @@ async def update_stack(
     db_stack = crud_stacks.get_stack_by_id(db, stack_id=stack_id)
     
     
-    # Check if stack used by deploy TODO: deploy 사용중인 stack은 수정 불가
+    # Check if stack used by deploy TODO: deploy에서 사용중인 stack은 수정 불가
     # if db_stack.stack_name != stack.stack_name:
     #     deploy = crud_deploy.get_deploy_by_stack(
     #         db=db, stack_name=db_stack.stack_name)
