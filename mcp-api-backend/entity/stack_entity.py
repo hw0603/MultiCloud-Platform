@@ -5,12 +5,13 @@ from pydantic import BaseModel, Field, constr
 
 class StackBase(BaseModel):
     stack_name: constr(strip_whitespace=True)
-    git_repo: constr(strip_whitespace=True)
-    branch: constr(strip_whitespace=True) = "master"
+    stack_type: Optional[constr(strip_whitespace=True)]
+    description: constr(strip_whitespace=True)
     team_access: List[str] = ["*"]
     tf_version: constr(strip_whitespace=True) = "1.3.2"
+    git_repo: Optional[constr(strip_whitespace=True)]
+    branch: Optional[constr(strip_whitespace=True)] = "master"
     project_path: Optional[constr(strip_whitespace=True)] = Field("", example="")
-    description: constr(strip_whitespace=True)
 
     class Config:
         """Extra configuration options"""
