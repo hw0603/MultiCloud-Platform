@@ -19,6 +19,7 @@ def create_new_stack(
 ):
     db_stack = models.Stack(
         stack_name=stack.stack_name,
+        stack_type=stack.stack_type,
         git_repo=stack.git_repo,
         tf_version=stack.tf_version,
         project_path=stack.project_path,
