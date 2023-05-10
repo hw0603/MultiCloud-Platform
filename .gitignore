@@ -273,3 +273,9 @@ $RECYCLE.BIN/
 
 # Misc
 runserver.py
+
+
+# Terafform
+.terraform
+credential.tf
+.terraform.lock.hcl
