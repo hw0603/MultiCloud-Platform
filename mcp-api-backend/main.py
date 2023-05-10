@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from api.v1.route import api_router
 from db.session import async_engine, engine
-from db.model import user_model, aws_cloudwatch_model
+from db.model import user_model, aws_cloudwatch_model, stack_model
 
 
 app = FastAPI(
@@ -20,6 +20,7 @@ async def init_tables():
     async with async_engine.begin() as conn:
         await conn.run_sync(user_model.Base.metadata.create_all)
         await conn.run_sync(aws_cloudwatch_model.Base.metadata.create_all)
+        await conn.run_sync(stack_model.Base.metadata.create_all)
 
 
 @app.get("/")
