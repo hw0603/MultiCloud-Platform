@@ -33,11 +33,11 @@ async def create_new_stack(
     return create_stack
 
 
-@router.patch("/{stack_id}", response_model=schemas_stacks.Stack)
-async def update_stack(
-    update_stack: schemas_stacks.StackCreate = Depends(stack_service.update_stack),
-):
-    return update_stack
+# @router.patch("/{stack_id}", response_model=schemas_stacks.Stack)
+# async def update_stack(
+#     update_stack: schemas_stacks.StackCreate = Depends(stack_service.update_stack),
+# ):
+#     return update_stack
 
 
 @router.get("/")
