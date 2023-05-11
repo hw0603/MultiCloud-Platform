@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from pydantic import BaseModel, Field, constr
+import datetime
 
 
 class StackBase(BaseModel):
@@ -12,6 +13,7 @@ class StackBase(BaseModel):
     git_repo: Optional[constr(strip_whitespace=True)]
     branch: Optional[constr(strip_whitespace=True)] = "master"
     project_path: Optional[constr(strip_whitespace=True)] = Field("", example="")
+    created_at: Optional[datetime.datetime]
 
     class Config:
         """Extra configuration options"""
