@@ -1,7 +1,7 @@
 import datetime
 
 from db.session import Base
-from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String
+from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, ForeignKey
 
 
 class User(Base):
@@ -12,7 +12,7 @@ class User(Base):
     fullname = Column(String(100), unique=True, nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     role = Column(JSON, nullable=False)
-    team = Column(JSON, nullable=False)
+    team = Column(String(50), ForeignKey("team.team_name"))
     is_active = Column(Boolean(), default=True)
     created_at = Column(DateTime, default=datetime.datetime.now())
     updated_at = Column(DateTime)

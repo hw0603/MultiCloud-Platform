@@ -1,7 +1,7 @@
 import datetime
 
 from db.session import Base
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String, UniqueConstraint
 
 
 class Team(Base):
@@ -10,3 +10,5 @@ class Team(Base):
     team_name = Column(String(50), nullalbe=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
     updated_at = Column(DateTime, default=datetime.datetime.now())
+    __table_args__ = (UniqueConstraint("team_name"),)
+    
