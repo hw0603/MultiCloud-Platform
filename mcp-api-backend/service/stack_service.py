@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, Depends, HTTPException
 
-# from src.activityLogs.infrastructure import repositories as crud_activity
+from repository import activity_logs_repository as crud_activity
 # from src.shared.helpers.get_data import check_team_stack, check_providers
 from utils.utils import sync_git, copy_template
 from src.shared.security import deps
@@ -80,12 +80,12 @@ async def create_new_stack(
             team_access=stack.team_access,
         )
 
-        # crud_activity.create_activity_log(
-        #     db=db,
-        #     username=current_user.username,
-        #     team=current_user.team,
-        #     action=f"Create Stack {stack.stack_name}",
-        # )
+        crud_activity.create_activity_log(
+            db=db,
+            username=current_user.username,
+            team=current_user.team,
+            action=f"Create Stack {stack.stack_name}",
+        )
         return result
     except Exception as err:
         raise HTTPException(status_code=409, detail=f"Duplicate entry {err}")
@@ -104,12 +104,12 @@ async def delete_stack_by_id_or_name(
             # Check if the user have permissions for delete stack
             # check_team_stack(db, current_user, current_user.team, result.team_access)
 
-            # crud_activity.create_activity_log(
-            #     db=db,
-            #     username=current_user.username,
-            #     team=current_user.team,
-            #     action=f"Delete Stack {result.stack_name}",
-            # )
+            crud_activity.create_activity_log(
+                db=db,
+                username=current_user.username,
+                team=current_user.team,
+                action=f"Delete Stack {result.stack_name}",
+            )
             return crud_stacks.delete_stack_by_name(db=db, stack_name=stack)
 
         result = crud_stacks.get_stack_by_id(db=db, stack_id=stack)
@@ -119,12 +119,12 @@ async def delete_stack_by_id_or_name(
         # Check if the user have permissions for create stack
         # check_team_stack(db, current_user, current_user.team, result.team_access)
 
-        # crud_activity.create_activity_log(
-        #     db=db,
-        #     username=current_user.username,
-        #     team=current_user.team,
-        #     action=f"Delete Stack {result.id}",
-        # )
+        crud_activity.create_activity_log(
+            db=db,
+            username=current_user.username,
+            team=current_user.team,
+            action=f"Delete Stack {result.id}",
+        )
         return crud_stacks.delete_stack_by_id(db=db, stack_id=stack)
     except Exception as err:
         raise err
@@ -242,12 +242,12 @@ async def update_stack(
             team_access=stack.team_access,
         )
 
-        # crud_activity.create_activity_log(
-        #     db=db,
-        #     username=current_user.username,
-        #     team=current_user.team,
-        #     action=f"Update Stack {stack.stack_name}",
-        # )
+        crud_activity.create_activity_log(
+            db=db,
+            username=current_user.username,
+            team=current_user.team,
+            action=f"Update Stack {stack.stack_name}",
+        )
         return result
     except Exception as err:
         raise HTTPException(status_code=409, detail=f"Duplicate entry {err}")
