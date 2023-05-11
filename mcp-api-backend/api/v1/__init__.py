@@ -4,5 +4,6 @@ __all__ = [
     "instance",
     "testapi",
     "stack",
-    "variable"
+    "variable",
+    "activity_log"
 ]
