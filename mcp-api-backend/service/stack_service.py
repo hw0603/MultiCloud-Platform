@@ -8,6 +8,7 @@ from entity import stack_entity as schemas_stacks
 from entity import user_entity as schemas_users
 from db.connection import get_db
 from repository import stack_repository as crud_stacks
+from repository import user_repository as crud_users
 from sqlalchemy.orm import Session
 import logging
 import random
@@ -28,21 +29,17 @@ async def create_new_stack(
     team = "team"
     branch = stack.branch
 
-    # Checkif stack name providers are supperted
-    # check_providers(stack_name=stack.stack_name) TODO: 프로바이더 prefix로 validation 필요
-    # logger.info("check_providers 반환...")
+    # TODO: 프로바이더 prefix로 validation 필요
+    # check_providers(stack_name=stack.stack_name)
 
-    # Check if stack exist
+    # 스택이 존재하는지 확인
     db_stack = crud_stacks.get_stack_by_name(db, stack_name=stack.stack_name)
-    logger.info("get_stack_by_name 반환...")
-    if db_stack:
-        raise HTTPException(
-            status_code=409, detail="The stack name already exist")
+    if (db_stack):
+        raise HTTPException(status_code=409, detail="해당 스택 이름이 이미 존재합니다.")
     
 
-    # Check if the user have permissions for create stack
-    # check_team_stack(db, current_user, current_user.team, stack.team_access) TODO: team_access validation 필요
-    # logger.info("check_team_stack 반환...")
+    # TODO: 현재 사용자가 스택을 생성할 권한이 있는지 확인
+    # check_team_stack(db, current_user, current_user.team, stack.team_access)
     
     # stack_type이 지정되었다면 git에서 clone하지 않고 내부 템플릿을 복사해서 사용
     if (stack.stack_type):
@@ -53,9 +50,8 @@ async def create_new_stack(
             team=team,
             name=name,
         )
-        logger.info("copy_template 반환...")
     else:
-        # Push git task to queue team, all workers are subscribed to this queue
+        # Git task를 'team' 큐에 푸시하고, 모든 워커는 이 큐에 subscribed 되어 있음
         task = sync_git(
             stack_name=stack.stack_name,
             git_repo=stack.git_repo,
@@ -65,15 +61,13 @@ async def create_new_stack(
             team=team,
             name=name,
         )
-        logger.info("sync_git 반환...")
     variables_list = [i for i in task[1]["variable"].keys()]
     try:
         # DB Persistant data
         result = crud_stacks.create_new_stack(
             db=db,
             stack=stack,
-            # user_id=current_user.id,
-            user_id=random.randint(0, 10000000),  # TODO: user_id 넣기
+            user_id=current_user.id,
             task_id=task[0],
             var_json=task[1],
             var_list=variables_list,
@@ -84,11 +78,11 @@ async def create_new_stack(
             db=db,
             username=current_user.username,
             team=current_user.team,
-            action=f"Create Stack {stack.stack_name}",
+            action=f"스택 {stack.stack_name} 생성",
         )
         return result
     except Exception as err:
-        raise HTTPException(status_code=409, detail=f"Duplicate entry {err}")
+        raise HTTPException(status_code=409, detail=f"엔트리 중복: {err}")
 
 
 async def delete_stack_by_id_or_name(
@@ -97,33 +91,34 @@ async def delete_stack_by_id_or_name(
     db: Session = Depends(get_db),
 ):
     try:
-        if not stack.isdigit():
+        if not (stack.isdigit()):
             result = crud_stacks.get_stack_by_name(db=db, stack_name=stack)
             if result is None:
-                raise HTTPException(status_code=404, detail="Stack id not found")
-            # Check if the user have permissions for delete stack
+                raise HTTPException(status_code=404, detail="스택 ID를 찾을 수 없습니다.")
+            
+            # TODO: 현재 유저가 스택을 삭제할 권한이 있는지 확인
             # check_team_stack(db, current_user, current_user.team, result.team_access)
 
             crud_activity.create_activity_log(
                 db=db,
                 username=current_user.username,
                 team=current_user.team,
-                action=f"Delete Stack {result.stack_name}",
+                action=f"스택 {result.stack_name} 삭제",
             )
             return crud_stacks.delete_stack_by_name(db=db, stack_name=stack)
 
         result = crud_stacks.get_stack_by_id(db=db, stack_id=stack)
-        if result is None:
-            raise HTTPException(status_code=404, detail="Stack id not found")
+        if (result is None):
+            raise HTTPException(status_code=404, detail="스택 ID를 찾을 수 없습니다.")
 
-        # Check if the user have permissions for create stack
+        # TODO: 현재 유저가 스택을 삭제할 권한이 있는지 확인
         # check_team_stack(db, current_user, current_user.team, result.team_access)
 
         crud_activity.create_activity_log(
             db=db,
             username=current_user.username,
             team=current_user.team,
-            action=f"Delete Stack {result.id}",
+            action=f"스택 {result.id} 삭제",
         )
         return crud_stacks.delete_stack_by_id(db=db, stack_id=stack)
     except Exception as err:
@@ -136,11 +131,11 @@ async def get_all_stacks(
     limit: int = 100,
     db: Session = Depends(get_db),
 ):
-    # TODO: 사용자 권한 validation 필요
-    # if not crud_users.is_master(db, current_user):
-    #     return crud_stacks.get_all_stacks_by_team(
-    #         db=db, team_access=current_user.team, skip=skip, limit=limit
-    #     )
+
+    if not crud_users.is_master(db, current_user):
+        return crud_stacks.get_all_stacks_by_team(
+            db=db, team_access=current_user.team, skip=skip, limit=limit
+        )
     return crud_stacks.get_all_stacks(
         db=db, skip=skip, limit=limit
     )
@@ -154,34 +149,33 @@ async def get_stack_by_id_or_name(
 
     if not stack.isdigit():
         result = crud_stacks.get_stack_by_name(db=db, stack_name=stack)
-        # if not crud_users.is_master(db, current_user):
-        #     if result is None:
-        #         raise HTTPException(
-        #             status_code=404, detail="stack id not found")
-        #     if (
-        #         not check_team_user(current_user.team, result.team_access)
-        #         and not "*" in result.team_access
-        #     ):
-        #         raise HTTPException(
-        #             status_code=403,
-        #             detail=f"Not enough permissions in {result.team_access}",
-        #         )
+        if not crud_users.is_master(db, current_user):
+            if result is None:
+                raise HTTPException(
+                    status_code=404, detail="스택 ID를 찾을 수 없습니다.")
+            if (
+                # not check_team_user(current_user.team, result.team_access) and 
+                not "*" in result.team_access
+            ):
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"{result.team_access} 에 접근 권한이 없습니다.",
+                )
         return result
 
     result = crud_stacks.get_stack_by_id(db=db, stack_id=stack)
     if result is None:
-        raise HTTPException(status_code=404, detail="stack id not found")
+        raise HTTPException(status_code=404, detail="스택 ID를 찾을 수 없습니다.")
     
-    # TODO: 사용자 권한 validation 필요
-    # if not crud_users.is_master(db, current_user):
-    #     if (
-    #         not check_team_user(current_user.team, result.team_access)
-    #         and not "*" in result.team_access
-    #     ):
-    #         raise HTTPException(
-    #             status_code=403,
-    #             detail=f"Not enough permissions in {result.team_access}",
-    #         )
+    if not crud_users.is_master(db, current_user):
+        if (
+            # not check_team_user(current_user.team, result.team_access) and
+            not "*" in result.team_access
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail=f"{result.team_access} 에 접근 권한이 없습니다.",
+            )
     return result
 
 
