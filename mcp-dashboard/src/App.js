@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
+import { Sidebar, Navbar } from './components';
 import "./App.css";
 import { useStateContext } from "./contexts/ContextProvider";
 import { Home, Dashboard, Deploy, User, Stack, Log, OpLog, Setting } from './pages';
@@ -19,6 +19,11 @@ function App() {
           <div
             className={"dark:bg-main-dark-bg  bg-main-bg min-h-screen md:ml-72 w-full"}
           >
+
+            <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full border-b-2">
+              <Navbar />
+            </div>
+
             <div>
               <Routes>
                 {/* home */}
