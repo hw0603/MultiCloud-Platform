@@ -14,7 +14,7 @@ from sqlalchemy import (
 
 class Deploy(Base):
     __tablename__ = "deploy"
-    id = Column(Integer, primary_key=True, index=True)
+    deploy_id = Column(Integer, primary_key=True, index=True)
     deploy_name = Column(String(100))
     start_time = Column(String(100))
     destroy_time = Column(String(100))
