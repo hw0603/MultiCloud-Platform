@@ -5,9 +5,8 @@ import "./App.css";
 import { useStateContext } from "./contexts/ContextProvider";
 import { Home, Dashboard, Deploy, User, Stack, Log, OpLog, Setting } from './pages';
 import { AWS } from "./pages/authenticaion";
+
 function App() {
-
-
   return (
     <div className="App">
       <BrowserRouter>

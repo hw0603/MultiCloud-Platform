@@ -6,14 +6,14 @@ import { chatData } from "../data/chatData";
 import { useStateContext } from "../contexts/ContextProvider";
 
 const Notification = () => {
-  const { currentColor } = useStateContext();
+  const { mainColor } = useStateContext();
 
   return (
     <div className="nav-item absolute right-5 md:right-40 top-16 bg-white dark:bg-[#42464D] p-8 rounded-lg w-96">
       <div className="flex justify-between items-center">
         <div className="flex gap-3">
           <p className="font-semibold text-lg dark:text-gray-200">
-            Notifications
+            알림
           </p>
           <button
             type="button"
@@ -54,8 +54,8 @@ const Notification = () => {
         <div className="mt-5">
           <Button
             color="white"
-            bgColor={currentColor}
-            text="See all notifications"
+            bgColor={mainColor}
+            text="모든 알림 보기"
             borderRadius="10px"
             width="full"
           />

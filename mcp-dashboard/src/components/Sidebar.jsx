@@ -5,7 +5,7 @@ import { links } from "../data/links";
 import { useStateContext } from "../contexts/ContextProvider";
 
 const Sidebar = () => {
-  const { currentColor, activeMenu, setActiveMenu, screenSize } =
+  const { mainColor, activeMenu, setActiveMenu } =
     useStateContext();
 
   const activeLink =
@@ -36,7 +36,7 @@ const Sidebar = () => {
                   to={`/${link.value}`}
                   key={link.name}
                   style={({ isActive }) => ({
-                    backgroundColor: isActive ? currentColor : "",
+                    backgroundColor: isActive ? mainColor : "",
                   })}
                   className={({ isActive }) =>
                     isActive ? activeLink : normalLink
