@@ -1,6 +1,6 @@
 from storage.storage_base import StorageBase
 from botocore.exceptions import ClientError
-from config.bucket_s3 import settings
+from config.s3_config import settings
 from datetime import datetime
 import logging
 import boto3
