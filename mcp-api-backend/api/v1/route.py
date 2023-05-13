@@ -3,6 +3,11 @@ from api.v1 import *
 
 
 api_router = APIRouter()
+
+@api_router.get("/", tags=["Connection Check"])
+async def status_check():
+    return {"status": "Connected"}
+
 api_router.include_router(testapi.router, prefix="/test", tags=["Test"])
 api_router.include_router(hello.router, prefix="/hello", tags=["Hello"])
 api_router.include_router(adminInfo.router, prefix="/adminInfo", tags=["AdminInfo"])
