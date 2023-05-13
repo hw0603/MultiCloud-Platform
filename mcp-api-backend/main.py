@@ -31,6 +31,6 @@ async def init_tables():
         await conn.run_sync(user_model.Base.metadata.create_all)
 
 
-@app.get("/")
+@app.get("/", tags=["Main"])
 def main():
     return {"message": "API Server main page"}
