@@ -4,17 +4,17 @@ from abc import *
 class StorageBase(metaclass=ABCMeta):
 
     @abstractmethod
-    def get(self, id):
+    def get(self, id: str):
         pass
 
     @abstractmethod
-    def put(self, id, info):
+    def put(self, id: str, info: dict):
         pass
 
     @abstractmethod
-    def lock(self, id, info):
+    def lock(self, id: str, info: dict):
         pass
 
     @abstractmethod
-    def unlock(self, id, info):
+    def unlock(self, id: str, info: dict):
         pass
