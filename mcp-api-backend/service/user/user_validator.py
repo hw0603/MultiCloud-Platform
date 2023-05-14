@@ -11,7 +11,8 @@ class PasswordValidator:
         )
     
     def validate(self, password: str) -> bool:
-        if password == None or len(password) == 0:
+        print(password)
+        if password is None or len(password) == 0:
             return False
         if len(self._policy.test(password)) > 0: # 실패한 테스트의 목록을 반환받음 / 길이가 0 -> 성공, 0보다 크면 -> 실패
             return False
@@ -46,6 +47,7 @@ class UserValidator:
             return (False, "Password weak")
         elif not self.username_validator.validate(username):
             return (False, "Username invalid")
+        return (True, "")
 
 
 class Container(containers.DeclarativeContainer):
