@@ -1,3 +1,6 @@
+from typing import Tuple
+
+from dependency_injector import containers, providers
 from password_strength import PasswordPolicy
 from usernames import is_safe_username
 
@@ -28,3 +31,27 @@ class UsernameValidator:
             blacklist=self._black_list,
             max_length = self._max_length,
         )
+
+class UserValidator:
+    def __init__(
+            self,
+            username_validator: UsernameValidator,
+            password_validator: PasswordValidator,
+    ):
+        self.username_validator = username_validator
+        self.password_validator = password_validator
+
+    def validate(self, username: str, password: str) -> Tuple[str, str]:
+        if not self.password_validator.validate(password):
+            return (False, "Password weak")
+        elif not self.username_validator.validate(username):
+            return (False, "Username invalid")
+
+
+class Container(containers.DeclarativeContainer):
+    username_validator = providers.Singleton(UsernameValidator)
+    password_validator = providers.Singleton(PasswordValidator)
+
+    user_validate_service = providers.Singleton(
+        UserValidator, username_validator, password_validator
+    )
