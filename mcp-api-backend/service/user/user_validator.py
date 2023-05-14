@@ -1,4 +1,5 @@
 from password_strength import PasswordPolicy
+from usernames import is_safe_username
 
 class PasswordValidator:
     def __init__(self) -> None:
@@ -14,4 +15,16 @@ class PasswordValidator:
         return True
     
 
-    
+class UsernameValidator:
+    def __init__(self) -> None:
+        self._whitelist = ['admin']                            # 항상 safe한 것으로 간주되는 단어 목록
+        self._black_list = ["guest", "root", "administrator"]  # unsafe한 것으로 간주되어야 하는 단어 목록
+        self._max_length = 12                                  # 최대 길이
+
+    def validate(self, username: str) -> bool:
+        return is_safe_username(
+            username,
+            whitelist=self._whitelist,
+            blacklist=self._black_list,
+            max_length = self._max_length,
+        )
