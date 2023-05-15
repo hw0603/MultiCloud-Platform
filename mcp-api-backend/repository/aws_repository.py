@@ -52,3 +52,4 @@ def create_aws_profile(db: Session, aws: schemas_aws.AwsAsumeProfile):
     except Exception as err:
         raise err
     
+
