@@ -1,7 +1,7 @@
 import os
 from fastapi import HTTPException, Depends
 
-from config.user_config import settings
+from config.api_config import settings
 from repository import user_repository as crud_users
 from sqlalchemy.orm import Session
 from db.connection import get_db

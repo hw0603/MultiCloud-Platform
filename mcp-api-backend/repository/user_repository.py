@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 import db.model.user_model as models
-from config.user_config import settings
+from config.api_config import settings
 
 Usermodel = models.User
 
@@ -24,7 +24,6 @@ def create_init_user(db: Session, password: str):
     )
     try:
         db.add(db_user)
-        print(db_user.team)
         db.commit()
         db.refresh(db_user)
         return db_user
