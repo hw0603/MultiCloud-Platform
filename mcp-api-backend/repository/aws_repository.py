@@ -3,12 +3,31 @@ import datetime
 from sqlalchemy.orm import Session
 import db.model.aws_model as models
 import entity.aws_entity as schemas_aws
+from src.shared.security.vault import vault_encrypt, vault_decrypt
+
+
+@vault_encrypt
+def encrypt(secreto):
+    try:
+        return secreto
+    except Exception as err:
+        raise err
+
+
+@vault_decrypt
+def decrypt(secreto):
+    try:
+        return secreto
+    except Exception as err:
+        raise err
 
 
 def create_aws_profile(db: Session, aws: schemas_aws.AwsAsumeProfile):
+    encrypt_access_key_id = encrypt(aws.access_key_id)
+    encrypt_secret_access_key = encrypt(aws.secret_access_key)
     db_aws = models.Aws_provider(
-        access_key_id=aws.access_key_id,
-        secret_access_key=aws.secret_access_key,
+        access_key_id=encrypt_access_key_id,
+        secret_access_key=encrypt_secret_access_key,
         default_region=aws.default_region,
         environment=aws.environment,
         profile_name=aws.profile_name,
