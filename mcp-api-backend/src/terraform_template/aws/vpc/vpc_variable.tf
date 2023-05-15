@@ -14,7 +14,7 @@ variable "aws_vpc_name" {
 variable "aws_dns_support_flag" {
     type = bool
     description = "VPC의 dns support 활성화/비활성화 여부를 true/false 로 입력하세요."
-    default = "aws vpc name"
+    default = true
 }
 
 # Internet Gateway

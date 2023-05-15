@@ -279,3 +279,6 @@ runserver.py
 .terraform
 credential.tf
 .terraform.lock.hcl
+
+# Testing API
+/mcp-api-backend/api/v1/testapi.py
