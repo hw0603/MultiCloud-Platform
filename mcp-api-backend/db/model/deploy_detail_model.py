@@ -2,6 +2,7 @@ import datetime
 
 from db.session import Base
 from sqlalchemy import JSON, Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class DeployDetail(Base):

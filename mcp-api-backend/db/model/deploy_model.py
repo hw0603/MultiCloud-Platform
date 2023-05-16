@@ -10,6 +10,7 @@ from sqlalchemy import (
     String,
     UniqueConstraint,
 )
+from sqlalchemy.orm import relationship
 
 
 class Deploy(Base):
@@ -25,3 +26,7 @@ class Deploy(Base):
     created_at = Column(DateTime, default=datetime.datetime.now())
     updated_at = Column(DateTime)
     detail_cnt = Column(Integer)
+
+    # Relationships
+    task_rel = relationship("Task")
+    deploy_detail_rel = relationship("DeployDetail")
