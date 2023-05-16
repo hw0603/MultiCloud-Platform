@@ -15,3 +15,4 @@ class DeployDetail(Base):
 
     # Relationships
     deploy_rel = relationship("Deploy", back_populates="deploy_detail_rel")
+    stack_rel = relationship("Stack", back_populates="deploy_detail_rel")
