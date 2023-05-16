@@ -122,3 +122,11 @@ def get_team_aws_profile(db: Session, team: str, environment: str):
     except Exception as err:
         raise err 
     
+
+def get_all_aws_profile(db: Session):
+    try:
+        return db.query(models.Aws_provider).all()
+    except Exception as err:
+        raise err
+    
+    

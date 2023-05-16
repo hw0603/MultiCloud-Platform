@@ -52,4 +52,15 @@ async def create_new_aws_profile(
             detail=str(err)
         )
     
-    
+
+async def get_all_aws_accounts(
+        current_user: schemas_user.User = Depends(deps.get_current_active_user),
+        db: Session = Depends(deps.get_db),
+):
+    # 사용자에게 권한이 있는지 확인
+    if not crud_user.is_master(db, current_user):
+        return crud_aws.get_team_aws_profile(
+            db=db, team=current_user.team, environment=None
+        )
+    return crud_aws.get_all_aws_profile(db=db)
+
