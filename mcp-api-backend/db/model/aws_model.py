@@ -2,7 +2,7 @@ import datetime
 
 from db.session import Base
 from sqlalchemy import Column, DateTime, Integer, String, UniqueConstraint, ForeignKey
-
+from sqlalchemy.orm import relationship
 
 class Aws_provider(Base):
     __tablename__ = "aws_provider"
@@ -17,3 +17,4 @@ class Aws_provider(Base):
     source_profile = Column(String(200), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.now())
     __table_args__ = (UniqueConstraint("environment"),)
+
