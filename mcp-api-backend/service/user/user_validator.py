@@ -7,11 +7,10 @@ from usernames import is_safe_username
 class PasswordValidator:
     def __init__(self) -> None:
         self._policy = PasswordPolicy.from_names(
-            length=8, uppercase=1, numbers=1, special=1, nonletters=1
+            length=8 # , uppercase=1, numbers=1, special=1, nonletters=1  ! 비밀번호 정책 임시로 완화
         )
     
     def validate(self, password: str) -> bool:
-        print(password)
         if password is None or len(password) == 0:
             return False
         if len(self._policy.test(password)) > 0: # 실패한 테스트의 목록을 반환받음 / 길이가 0 -> 성공, 0보다 크면 -> 실패
