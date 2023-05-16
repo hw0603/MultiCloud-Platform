@@ -2,7 +2,7 @@ import datetime
 
 from db.session import Base
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, ForeignKey
-
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "user"
@@ -16,3 +16,6 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
     created_at = Column(DateTime, default=datetime.datetime.now())
     updated_at = Column(DateTime)
+
+    # Relationships
+    team_rel = relationship("Team", back_populates="user_rel")
