@@ -1,11 +1,41 @@
-from os.path import dirname, basename, isfile, join
-import glob
-modules = glob.glob(join(dirname(__file__), "*.py"))
+# from db.model import (
+#     activity_log_model,
+#     aws_cloudwatch_model,
+#     aws_model,
+#     azure_model,
+#     custom_provider_model,
+#     deploy_detail_model,
+#     deploy_model,
+#     gcp_model,
+#     stack_model,
+#     task_model,
+#     team_model,
+#     user_model
+# )
+
 __all__ = [
-    basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')
+    "activity_log_model",
+    "aws_cloudwatch_model",
+    "aws_model",
+    "azure_model",
+    "custom_provider_model",
+    "deploy_detail_model",
+    "deploy_model",
+    "gcp_model",
+    "stack_model",
+    "task_model",
+    "team_model",
+    "user_model",
 ]
 from db.model import *
 
+
+# from os.path import dirname, basename, isfile, join
+# import glob
+# modules = glob.glob(join(dirname(__file__), "*.py"))
+# __all__ = [
+#     basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')
+# ]
 
 # 모든 모델을 import
 # 참고) https://stackoverflow.com/questions/9088957/sqlalchemy-cannot-find-a-class-name
