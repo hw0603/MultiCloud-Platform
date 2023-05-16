@@ -15,6 +15,3 @@ class Task(Base):
     team = Column(String(50), nullable=False)
     action = Column(String(50), nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
-
-    # Relationships
-    deploy_rel = relationship("Deploy", back_populates="task_rel")

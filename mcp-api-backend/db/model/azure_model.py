@@ -15,6 +15,3 @@ class Azure_provider(Base):
     tenant_id = Column(String(200), nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
     __table_args__ = (UniqueConstraint("environment"),)
-
-    # Relationships
-    team_rel = relationship("Team", back_populates="azure_provider_rel")

@@ -16,6 +16,3 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
     created_at = Column(DateTime, default=datetime.datetime.now())
     updated_at = Column(DateTime)
-
-    # Relationships
-    team_rel = relationship("Team", back_populates="user_rel")

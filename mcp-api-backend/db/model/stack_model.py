@@ -23,4 +23,4 @@ class Stack(Base):
     created_at = Column(DateTime, default=datetime.datetime.now())
 
     # Relationships
-    deploy_detail_rel = relationship("DeployDetail", back_populates="stack_rel")
+    deploy_detail_rel = relationship("DeployDetail")

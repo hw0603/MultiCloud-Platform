@@ -28,5 +28,5 @@ class Deploy(Base):
     detail_cnt = Column(Integer)
 
     # Relationships
-    task_rel = relationship("Task", back_populates="deploy_rel")
-    deploy_detail_rel = relationship("DeployDetail", back_populates="deploy_rel")
+    task_rel = relationship("Task")
+    deploy_detail_rel = relationship("DeployDetail")

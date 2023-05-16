@@ -12,6 +12,3 @@ class Gcloud_provider(Base):
     gcloud_keyfile_json = Column(String(5000), nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
     __table_args__ = (UniqueConstraint("team", "environment"),)
-
-    # Relationships
-    team_rel = relationship("Team", back_populates="gcloud_provider_rel")

@@ -12,7 +12,3 @@ class DeployDetail(Base):
     stack_id = Column(Integer, ForeignKey("stack.stack_id"))
     tfvar_file = Column(String(50), nullable=True)
     variables = Column(JSON)
-
-    # Relationships
-    deploy_rel = relationship("Deploy", back_populates="deploy_detail_rel")
-    stack_rel = relationship("Stack", back_populates="deploy_detail_rel")

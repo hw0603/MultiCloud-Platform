@@ -18,5 +18,3 @@ class Aws_provider(Base):
     created_at = Column(DateTime, default=datetime.datetime.now())
     __table_args__ = (UniqueConstraint("environment"),)
 
-    # Relationships
-    team_rel = relationship("Team", back_populates="aws_provider_rel")

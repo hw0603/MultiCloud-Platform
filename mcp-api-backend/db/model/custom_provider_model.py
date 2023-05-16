@@ -13,6 +13,3 @@ class Custom_provider(Base):
     configuration = Column(JSON, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
     __table_args__ = (UniqueConstraint("environment"),)
-
-    # Relationships
-    team_rel = relationship("Team", back_populates="custom_provider_rel")
