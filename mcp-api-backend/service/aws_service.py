@@ -54,8 +54,8 @@ async def create_new_aws_profile(
     
 
 async def get_all_aws_accounts(
-        current_user: schemas_user.User = Depends(deps.get_current_active_user),
-        db: Session = Depends(deps.get_db),
+    current_user: schemas_user.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(deps.get_db),
 ):
     # 사용자에게 권한이 있는지 확인
     if not crud_user.is_master(db, current_user):
@@ -64,3 +64,24 @@ async def get_all_aws_accounts(
         )
     return crud_aws.get_all_aws_profile(db=db)
 
+
+async def aws_account_by_id(
+    aws_account_id: int,
+    current_user: schemas_user.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(deps.get_db),
+):
+
+    if not crud_user.is_master(db, current_user):
+        raise HTTPException(
+            status_code=403,
+            detail="해당 사용자에게 권한이 없습니다."
+        )
+
+    result = crud_aws.delete_aws_profile_by_id(db=db, aws_profile_id=aws_account_id)
+    crud_activity.create_activity_log(
+        db=db,
+        username=current_user.username,
+        team=current_user.team,
+        action=f"Delete AWS account {aws_account_id}",
+    )
+    return result
