@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy.orm import Session
 import db.model.user_model as models
 from config.api_config import settings
@@ -37,6 +38,32 @@ def create_init_user(db: Session, password: str):
         team="team",
         is_active=True
     )
+    try:
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except Exception as err:
+        raise err
+
+def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
+    db_user = db.query(Usermodel).filter(Usermodel.id == user_id).first()
+    db_user.updated_at = datetime.datetime.now()
+    check_None = [None, "", "string"]
+    if user.password not in check_None:
+        db_user.password = get_password_hash(user.password)
+    if user.username not in check_None:
+        db_user.username = user.username
+    if user.email not in check_None:
+        db_user.email = user.email
+    if user.fullname not in check_None:
+        db_user.fullname = user.fullname
+    if user.team not in check_None:
+        db_user.team = user.team
+    if user.role not in check_None:
+        db_user.role = user.role
+    if user.is_active not in check_None:
+        db_user.is_active = user.is_active
     try:
         db.add(db_user)
         db.commit()
