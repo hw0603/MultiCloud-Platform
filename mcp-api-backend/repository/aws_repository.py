@@ -53,3 +53,72 @@ def create_aws_profile(db: Session, aws: schemas_aws.AwsAsumeProfile):
         raise err
     
 
+def get_credentials_aws_profile(db: Session, environment: str, team: str):
+    get_access_key = (
+        db.query(models.Aws_provider.access_key_id)
+        .filter(models.Aws_provider.environment == environment)
+        .filter(models.Aws_provider.team == team)
+        .first()
+    )
+    get_secret_access_key = (
+        db.query(models.Aws_provider.secret_access_key)
+        .filter(models.Aws_provider.environment == environment)
+        .filter(models.Aws_provider.team == team)
+        .first()
+    )
+    default_region = (
+        db.query(models.Aws_provider.default_region)
+        .filter(models.Aws_provider.environment == environment)
+        .filter(models.Aws_provider.team == team)
+        .first()
+    )
+    profile_name = (
+        db.query(models.Aws_provider.profile_name)
+        .filter(models.Aws_provider.environment == environment)
+        .filter(models.Aws_provider.team == team)
+        .first()
+    )
+    role_arn = (
+        db.query(models.Aws_provider.role_arn)
+        .filter(models.Aws_provider.environment == environment)
+        .filter(models.Aws_provider.team == team)
+        .first()
+    )
+    source_profile = (
+        db.query(models.Aws_provider.source_profile)
+        .filter(models.Aws_provider.environment == environment)
+        .filter(models.Aws_provider.team == team)
+    )
+    try:
+        return {
+            "access_key": decrypt(get_access_key[0]),
+            "secret_access_key": decrypt(get_secret_access_key[0]),
+            "default_region": default_region[0],
+            "profile_name": profile_name[0],
+            "role_arn": role_arn[0],
+            "source_profile": source_profile[0],
+        }
+    except Exception as err:
+        raise err 
+
+
+def get_team_aws_profile(db: Session, team: str, environment: str):
+    try:
+        if environment != None:
+            return (
+                db.query(models.Aws_provider)
+                .filter(models.Aws_provider.team == team)
+                .filter(models.Aws_provider.environment == environment)
+                .first()
+            )
+        result = []
+        for i in team:
+            result.extend(
+                db.query(models.Aws_provider)
+                .filter(models.Aws_provider.team == i)
+                .all()
+            )
+        return set(result)
+    except Exception as err:
+        raise err 
+    

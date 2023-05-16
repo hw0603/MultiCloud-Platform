@@ -2,13 +2,14 @@ import datetime
 
 from db.session import Base
 from sqlalchemy import Column, DateTime, Integer, String, UniqueConstraint, ForeignKey
+from db.model.team_model import Team
 
 
 class Aws_provider(Base):
     __tablename__ = "aws_provider"
     id = Column(Integer, primary_key=True, index=True)
     environment = Column(String(200), nullable=False)
-    team = Column(String(50), ForeignKey("team.team_name"))
+    team = Column(String(50), ForeignKey(Team.team_name))
     access_key_id = Column(String(200), nullable=False)
     secret_access_key = Column(String(200), nullable=False)
     default_region = Column(String(200))
