@@ -15,4 +15,7 @@ class Team(Base):
 
     # Relationships
     user_rel = relationship("User", back_populates="team_rel")
-    
+    aws_provider_rel = relationship("Aws_provider", back_populates="team_rel")
+    azure_provider_rel = relationship("Azure_provider", back_populates="team_rel")
+    gcloud_provider_rel = relationship("Gcloud_provider", back_populates="team_rel")
+    custom_provider_rel = relationship("Custom_provider", back_populates="team_rel")

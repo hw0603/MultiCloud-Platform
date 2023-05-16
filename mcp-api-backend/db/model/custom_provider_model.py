@@ -2,6 +2,7 @@ import datetime
 
 from db.session import Base
 from sqlalchemy import JSON, Column, DateTime, Integer, String, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class Custom_provider(Base):
@@ -12,3 +13,6 @@ class Custom_provider(Base):
     configuration = Column(JSON, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
     __table_args__ = (UniqueConstraint("environment"),)
+
+    # Relationships
+    team_rel = relationship("Team", back_populates="custom_provider_rel")
