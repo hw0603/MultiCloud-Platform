@@ -48,6 +48,24 @@ async def create_user(
     except Exception as err:
         raise HTTPException(status_code=400, detail=str(err))
 
+async def get_user_list(
+        current_user: User = Depends(deps.get_current_active_user),
+        skip: int = 0,
+        limit: int = 100,
+        db: Session = Depends(deps.get_db)
+):
+    if not crud_users.is_superuser(db, current_user):
+        raise HTTPException(status_code=403, detail="접근할 수 없는 작업입니다.")
+    try:
+        if not crud_users.is_master(db, current_user):
+            return crud_users.get_users_by_team(
+                db=db, team=current_user.team, skip=skip, limit=limit
+            )
+        return crud_users.get_all_users(db=db, skip=skip, limit=limit)
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
+    
+
 async def update_user(
         user_id: str,
         user: UserUpdate,

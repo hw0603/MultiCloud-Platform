@@ -1,4 +1,6 @@
 import datetime
+from unittest import result
+from numpy import square
 from sqlalchemy.orm import Session
 import db.model.user_model as models
 from config.api_config import settings
@@ -8,12 +10,6 @@ from src.shared.security.vault import get_password_hash
 
 Usermodel = models.User
 
-
-def get_user_by_username(db: Session, username: str):
-    try:
-        return db.query(Usermodel).filter(Usermodel.username == username).first()
-    except Exception as err:
-        raise err
 
 def create_user(db: Session, user: schemas.UserCreate):
     db_user = Usermodel(**user.dict())
@@ -43,6 +39,24 @@ def create_init_user(db: Session, password: str):
         db.commit()
         db.refresh(db_user)
         return db_user
+    except Exception as err:
+        raise err
+
+def get_user_by_username(db: Session, username: str):
+    try:
+        return db.query(Usermodel).filter(Usermodel.username == username).first()
+    except Exception as err:
+        raise err
+
+def get_all_users(db: Session, skip: int = 0, limit: int = 100):
+    try:
+        return db.query(Usermodel).offset(skip).limit(limit).all()
+    except Exception as err:
+        raise err
+
+def get_users_by_team(db: Session, team: str, skips: int = 0, limit: int = 100):
+    try:
+        return db.query(Usermodel).filter(Usermodel.team == team).all()
     except Exception as err:
         raise err
 
