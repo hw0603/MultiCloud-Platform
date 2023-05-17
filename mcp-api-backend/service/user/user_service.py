@@ -52,15 +52,15 @@ async def get_user_list(
         current_user: User = Depends(deps.get_current_active_user),
         skip: int = 0,
         limit: int = 100,
-        db: Session = Depends(deps.get_db)
+        db: Session = Depends(get_db)
 ):
-    if not crud_users.is_superuser(db, current_user):  # superuser(team_manager)가 아닌 일반 user는 user list를 조회할 수 없음
-        raise HTTPException(status_code=403, detail="접근할 수 없는 작업입니다.")
+    # if not crud_users.is_superuser(db, current_user):  # superuser(team_manager)가 아닌 일반 user는 user list를 조회할 수 없음
+    #     raise HTTPException(status_code=403, detail="접근할 수 없는 작업입니다.")
     try:
-        if not crud_users.is_master(db, current_user):  # superuser(team_manager)는 자신이 속한 team의 user만 조회
-            return crud_users.get_users_by_team(
-                db=db, team=current_user.team, skip=skip, limit=limit
-            )
+        # if not crud_users.is_master(db, current_user):  # superuser(team_manager)는 자신이 속한 team의 user만 조회
+        #     return crud_users.get_users_by_team(
+        #         db=db, team=current_user.team, skip=skip, limit=limit
+        #     )
         return crud_users.get_all_users(db=db, skip=skip, limit=limit)  # master(system_manager)는 모든 user 조회
     except Exception as err:
         raise HTTPException(status_code=400, detail=str(err))
