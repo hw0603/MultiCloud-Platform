@@ -11,7 +11,7 @@ class UserCreate(UserBase):
     password: str
     email: EmailStr = None
     is_active: bool = True
-    team: List[str] = []
+    team: str
     role: List[str] = []
 
 
