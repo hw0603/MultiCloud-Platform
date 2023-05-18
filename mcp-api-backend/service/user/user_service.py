@@ -1,6 +1,5 @@
 from multiprocessing import connection
 import os
-from re import U
 from unittest import result
 from fastapi import HTTPException, Depends
 from entity.user_entity import UserUpdate
@@ -65,6 +64,17 @@ async def get_user_list(
     except Exception as err:
         raise HTTPException(status_code=400, detail=str(err))
     
+async def get_user_by_id_or_name(
+        user,
+        current_user: User = Depends(deps.get_current_active_user),
+        db: Session = Depends(get_db),
+):
+    try:
+        if not user.isdigit():
+            return crud_users.get_user_by_username(db=db, username=user)
+        return crud_users.get_user_by_id(db=db, user=user)
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
 
 async def update_user(
         user_id: str,

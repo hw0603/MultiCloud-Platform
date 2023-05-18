@@ -48,6 +48,12 @@ def get_user_by_username(db: Session, username: str):
     except Exception as err:
         raise err
 
+def get_user_by_id(db: Session, user: int):
+    try:
+        return db.query(Usermodel).filter(Usermodel.id == user).first()
+    except Exception as err:
+        raise err
+
 def get_all_users(db: Session, skip: int = 0, limit: int = 100):
     try:
         return db.query(Usermodel).offset(skip).limit(limit).all()
