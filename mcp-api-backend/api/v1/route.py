@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.v1 import *
+from api.v1 import adminInfo, instance, stack, variable, activity_log
 
 
 api_router = APIRouter()
@@ -8,7 +8,6 @@ api_router = APIRouter()
 async def status_check():
     return {"status": "Connected"}
 
-api_router.include_router(testapi.router, prefix="/test", tags=["Test"])
 api_router.include_router(adminInfo.router, prefix="/adminInfo", tags=["AdminInfo"])
 api_router.include_router(instance.router, prefix="/instance", tags=["Instance"])
 api_router.include_router(stack.router, prefix="/stacks", tags=["Stack"])
