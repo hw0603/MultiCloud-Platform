@@ -21,4 +21,6 @@ class Stack(Base):
     task_id = Column(String(200))
     project_path = Column(String(50))
     created_at = Column(DateTime, default=datetime.datetime.now())
-    # deploy = relationship("Deploy")
+
+    # Relationships
+    deploy_detail_rel = relationship("DeployDetail")
