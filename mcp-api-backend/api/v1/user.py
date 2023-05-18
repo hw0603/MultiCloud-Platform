@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 
-from service.user import user_service
+from service import user_service
 from entity.user_entity import (
     User,
     UserInit,
