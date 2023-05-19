@@ -37,7 +37,7 @@ class CheckPasswd:
     
     def verify_password(self) -> bool:
         # 비밀번호 해싱 및 검증을 수행하는 인스턴스(CryptContext) 생성 (bycrypt 알고리즘 사용)
-        pwd_context = CryptContext(schemes=["bycrypt"], deprecated="auto")
+        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         return pwd_context.verify(self.password, self.hashed_password)
 
 class UserExist:
@@ -74,7 +74,7 @@ class UserExist:
                 status_code=403, detail="사용자 이름이나 패스워드가 올바르지 않습니다."
             )
         # TODO: 추가 exception validation 필요
-        
+
         # Token 반환
         return {
             "access_token": config_token.create_access_token(),
