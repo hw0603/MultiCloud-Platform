@@ -92,6 +92,12 @@ def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
     except Exception as err:
         raise err
 
+def is_active(db: Session, user: schemas.UserCreate):
+    try:
+        return user.is_active
+    except Exception as err:
+        raise err
+
 def is_superuser(db: Session, user: schemas.UserCreate) -> bool:
     ...  # TODO: 구현하기
     return True

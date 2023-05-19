@@ -81,3 +81,5 @@ class UserExist:
             "token_type": "brearer",
         }
 
+def decode_access_token(*, token: str):
+    return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=settings.ALGORITHM)
