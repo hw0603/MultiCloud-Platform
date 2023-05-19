@@ -55,4 +55,4 @@ class TokenPayload(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str = None
+    user_id: int = None
