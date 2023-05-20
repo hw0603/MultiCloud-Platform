@@ -99,10 +99,16 @@ def is_active(db: Session, user: schemas.UserCreate):
         raise err
 
 def is_superuser(db: Session, user: schemas.UserCreate) -> bool:
-    ...  # TODO: 구현하기
-    return True
+    try:
+        super_role = ["team_manager"]
+        return bool(set(user.role).intersection(super_role))
+    except Exception as err:
+        raise err
 
 def is_master(db: Session, user: schemas.UserCreate) -> bool:
-    ...  # TODO: 구현하기
-    return True
+    try:
+        master_role = ["system_manager"]
+        return bool(set(user.role).intersection(master_role))
+    except Exception as err:
+        raise err
 
