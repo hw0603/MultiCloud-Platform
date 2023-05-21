@@ -1,4 +1,5 @@
 from typing import Optional
+
 from pydantic import BaseModel, Field, constr
 
 
@@ -7,14 +8,14 @@ class DeployDetailBase(BaseModel):
     stack_name: constr(strip_whitespace=True)
     stack_branch: Optional[constr(strip_whitespace=True)] = Field("", example="")
     username: constr(strip_whitespace=True)
-    team: constr(strip_whitespace=True)
+    squad: constr(strip_whitespace=True)
     environment: constr(strip_whitespace=True)
     variables: constr(strip_whitespace=True)
 
 
 class DeployDetailCreate(BaseModel):
     name: constr(strip_whitespace=True)
-    team: constr(strip_whitespace=True)
+    squad: constr(strip_whitespace=True)
     stack_name: constr(strip_whitespace=True)
     stack_branch: Optional[constr(strip_whitespace=True)] = Field("", example="")
     environment: constr(strip_whitespace=True)
@@ -31,12 +32,12 @@ class DeployDetailCreate(BaseModel):
     variables: dict
 
 
-class DeployDeatailCreateMaster(DeployDetailCreate):
-    team: constr(strip_whitespace=True)
+class DeployDetailCreateMaster(DeployDetailCreate):
+    squad: constr(strip_whitespace=True)
 
 
 class DeployDetailDeleteMaster(BaseModel):
-    team: constr(strip_whitespace=True)
+    squad: constr(strip_whitespace=True)
 
 
 class DeployDetailUpdate(BaseModel):
@@ -50,7 +51,7 @@ class DeployDetailUpdate(BaseModel):
     variables: dict
 
 
-class DeployDetail(DeployDetailBase):
+class Deploy(DeployDetailBase):
     id: int
     task_id: constr(strip_whitespace=True)
     user_id: int

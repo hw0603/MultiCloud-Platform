@@ -5,5 +5,6 @@ __all__ = [
     "stack",
     "variable",
     "activity_log",
-    "user"
+    "user",
+    "deploy"
 ]
