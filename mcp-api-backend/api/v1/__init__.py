@@ -7,4 +7,5 @@ __all__ = [
     "variable",
     "activity_log",
     "auth"
+    "user"
 ]
