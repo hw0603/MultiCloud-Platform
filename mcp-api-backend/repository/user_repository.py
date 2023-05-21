@@ -48,9 +48,9 @@ def get_user_by_username(db: Session, username: str):
     except Exception as err:
         raise err
 
-def get_user_by_id(db: Session, user: int):
+def get_user_by_id(db: Session, id: int):
     try:
-        return db.query(Usermodel).filter(Usermodel.id == user).first()
+        return db.query(Usermodel).filter(Usermodel.id == id).first()
     except Exception as err:
         raise err
 
@@ -60,7 +60,7 @@ def get_all_users(db: Session, skip: int = 0, limit: int = 100):
     except Exception as err:
         raise err
 
-def get_users_by_team(db: Session, team: str, skips: int = 0, limit: int = 100):
+def get_users_by_team(db: Session, team: str, skip: int = 0, limit: int = 100):
     try:
         return db.query(Usermodel).filter(Usermodel.team == team).all()
     except Exception as err:
@@ -69,7 +69,7 @@ def get_users_by_team(db: Session, team: str, skips: int = 0, limit: int = 100):
 def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
     db_user = db.query(Usermodel).filter(Usermodel.id == user_id).first()
     db_user.updated_at = datetime.datetime.now()
-    check_None = [None, "", "string"]
+    check_None = [None, "", "string", []]
     if user.password not in check_None:
         db_user.password = get_password_hash(user.password)
     if user.username not in check_None:

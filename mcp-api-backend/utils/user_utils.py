@@ -73,6 +73,11 @@ def validate_password(
         )
     return True
 
-
 container = Container()
 container.wire(modules=[__name__])
+
+def check_team_user(owner_team: str, add_user_team: str) -> bool:
+    return owner_team == add_user_team
+
+def check_role_user(add_user_role: str):
+    return add_user_role == ["user"]
