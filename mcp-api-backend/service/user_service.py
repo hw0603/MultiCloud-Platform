@@ -7,7 +7,7 @@ from repository import user_repository as crud_users
 from sqlalchemy.orm import Session
 from db.connection import get_db
 from utils.utils import object_as_dict
-from utils.user_utils import check_team_user, check_role_user
+from utils.user_utils import check_team_user, check_role_user, validate_email
 from entity.user_entity import UserInit, UserCreate, User
 from utils.user_utils import validate_password
 from src.shared.security import deps
@@ -146,6 +146,8 @@ async def update_user(
     check_None = [None, "", "string"]
     if user.password not in check_None:
         validate_password(user.username, user.password)
+    if user.email not in check_None:
+        validate_email(user.email)
     try:
         result = crud_users.update_user(db=db, user_id=user_id, user=user)
         print(user.role)

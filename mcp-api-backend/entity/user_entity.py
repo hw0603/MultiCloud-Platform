@@ -19,8 +19,13 @@ class UserCreateMaster(UserCreate):
     pass 
 
 
-class UserUpdate(UserCreate):
-    pass
+class UserUpdate(UserBase):
+    fullname: constr(strip_whitespace=True)
+    password: str
+    email: str = None
+    is_active: bool = True
+    team: str
+    role: List[str] = []
 
 
 class UserAuthenticate(UserBase):
