@@ -22,7 +22,6 @@ class TokenCreate:
             )
         # Token의 만료 시간 설정
         to_encode.update({"exp": expire})
-        to_encode = {"exp": expire, "sub": str(self.subject)}
 
         # JWT 토큰 생성
         encoded_jwt = jwt.encode(
@@ -64,7 +63,7 @@ class UserExist:
             access_token_expires = timedelta(
                 minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
             )
-            config_token = self.token(subject={"sub": user.id}, expires_delta=access_token_expires)
+            config_token = self.token(subject={"sub": str(user.id)}, expires_delta=access_token_expires)
         
         except Exception as err:
             HTTPException(status_code=400, detail=str(err))
@@ -78,7 +77,7 @@ class UserExist:
         # Token 반환
         return {
             "access_token": config_token.create_access_token(),
-            "token_type": "brearer",
+            "token_type": "bearer",
         }
 
 def decode_access_token(*, token: str):
