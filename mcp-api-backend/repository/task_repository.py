@@ -12,16 +12,16 @@ def create_task(
     user_id: int,
     deploy_id: int,
     username: str,
-    squad: str,
+    team: str,
     action: str,
 ):
-    db_task = models.Tasks(
+    db_task = models.Task(
         task_id=task_id,
         task_name=task_name,
         user_id=user_id,
         deploy_id=deploy_id,
         username=username,
-        squad=squad,
+        team=team,
         created_at=datetime.datetime.now(),
         action=action,
     )
@@ -48,13 +48,13 @@ def get_all_tasks(db: Session, skip: int = 0, limit: int = 100):
         raise err
 
 
-def get_all_tasks_by_squad(db: Session, squad: str, skip: int = 0, limit: int = 100):
+def get_all_tasks_by_team(db: Session, team: str, skip: int = 0, limit: int = 100):
     try:
         result = []
-        for i in squad:
+        for i in team:
             result.extend(
                 db.query(models.Tasks)
-                .filter(models.Tasks.squad == i)
+                .filter(models.Tasks.team == i)
                 .order_by(models.Tasks.created_at.desc())
                 .offset(skip)
                 .limit(limit)
