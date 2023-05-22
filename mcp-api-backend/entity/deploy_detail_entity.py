@@ -7,6 +7,7 @@ class DeployDetailBase(BaseModel):
 
 
 class DeployDetailCreate(BaseModel):
+    stack_name: constr(strip_whitespace=True)
     tfvar_file: Optional[constr(strip_whitespace=True)] = Field(
         "", example="terraform.tfvars"
     )

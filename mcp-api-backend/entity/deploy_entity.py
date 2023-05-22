@@ -1,6 +1,6 @@
 from typing import Optional
-
 from pydantic import BaseModel, Field, constr
+from entity.deploy_detail_entity import DeployDetailCreate
 
 
 class DeployBase(BaseModel):
@@ -20,6 +20,7 @@ class DeployCreate(BaseModel):
     destroy_time: Optional[constr(strip_whitespace=True)] = Field(
         None, example="30 8 * * 0-4"
     )
+    deploy_detail: list[DeployDetailCreate]
     
     
 class DeployCreateMaster(DeployCreate):
