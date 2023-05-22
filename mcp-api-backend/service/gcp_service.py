@@ -51,7 +51,7 @@ async def new_gcloud_profile(
             team=current_user.team,
             action=f"Create GCP account {result.id}",
         )
-        return result
+        return {"result": f"Create GCP account {gcp.team} {gcp.environment}"}
     
     except Exception as err:
         raise HTTPException(status_code=400, detail=err)

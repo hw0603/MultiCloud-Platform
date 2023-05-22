@@ -30,7 +30,7 @@ def create_gcloud_profile(
     db_gcloud = models.Gcloud_provider(
         gcloud_keyfile_json=encrypt_gcloud_keyfile_json,
         environment=environment,
-        created_at=datetime.date.now(),
+        created_at=datetime.datetime.now(),
         team=team,
     )
     try:
@@ -103,5 +103,4 @@ def get_gcloud_account_by_id(db: Session, provider_id: int):
         )
     except Exception as err:
         raise err
-    
     

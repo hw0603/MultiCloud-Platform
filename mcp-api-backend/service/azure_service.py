@@ -44,7 +44,7 @@ async def create_new_azure_profile(
             team=current_user.team,
             action=f"Create Azure Account {azure.subscription_id}",
         )
-        return result
+        return {"result": f"Create Azure account {azure.team} {azure.environment}"}
     
     except Exception as err:
         raise HTTPException(
@@ -82,7 +82,7 @@ async def azure_account_by_id(
     crud_activity.create_activity_log(
         db=db,
         username=current_user.username,
-        squad=current_user.squad,
+        team=current_user.team,
         action=f"Delete Azure account {azure_account_id}",
     )
 
