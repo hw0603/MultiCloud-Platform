@@ -1,5 +1,10 @@
-from typing import Tuple
+from http import HTTPStatus
+from dependency_injector.wiring import Provide, inject
+from email_validator import EmailNotValidError
+from fastapi import Depends, HTTPException, status
 
+from typing import Tuple
+import re
 from dependency_injector import containers, providers
 from password_strength import PasswordPolicy
 from usernames import is_safe_username
@@ -32,6 +37,15 @@ class UsernameValidator:
             max_length = self._max_length,
         )
 
+class EmailValidator:
+    def __init__(self) -> None:
+        self.regex_email = '([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'
+    
+    def validate(self, email: str):
+        if not re.fullmatch(self.regex_email, email):
+            return False
+        return True
+        
 class UserValidator:
     def __init__(
             self,
@@ -52,7 +66,40 @@ class UserValidator:
 class Container(containers.DeclarativeContainer):
     username_validator = providers.Singleton(UsernameValidator)
     password_validator = providers.Singleton(PasswordValidator)
+    email_validator = providers.Singleton(EmailValidator)
 
     user_validate_service = providers.Singleton(
         UserValidator, username_validator, password_validator
     )
+
+@inject
+def validate_password(
+    username: str, password: str, user_validate_service=Provide[Container.user_validate_service]
+):
+    (result, additional_info) = user_validate_service.validate(username, password)
+    if not result:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{additional_info}",
+        )
+    return True
+
+@inject
+def validate_email(
+    email: str, email_validate_service=Provide[Container.email_validator]
+):
+    if not email_validate_service.validate(email):
+        raise HTTPException(
+            status_code=400,
+            detail="올바르지 않은 email 주소입니다."
+        )
+    return True
+
+container = Container()
+container.wire(modules=[__name__])
+
+def check_team_user(owner_team: str, add_user_team: str) -> bool:
+    return owner_team == add_user_team
+
+def check_role_user(add_user_role: str):
+    return add_user_role == ["user"]

@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     }
 
     API_V1_URL: str = "/api/v1"
-    SECRET_KEY = ""
+    JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY", "key")
     ALGORITHM = "HS256"
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
