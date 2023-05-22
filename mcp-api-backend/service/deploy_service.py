@@ -60,7 +60,7 @@ async def deploy_infra_from_list(
             status_code=404, detail=f"찾을 수 없는 스택이 포함되어 있습니다."
         )
     
-    # TODO: Airflow 로 배포 요청
+    # TODO: Airflow 로 배포 요청. 실제로는 conf에 deploy_detail 정보와 Provider 정보가 제공되어야 함
     airflow_conf = {}
     trigger_result = airflow_service.trigger_dag(
         dag_id="mcp_deploy_dag",
