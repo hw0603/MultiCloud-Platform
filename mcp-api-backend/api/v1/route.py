@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.v1 import adminInfo, instance, stack, variable, activity_log, aws
+from api.v1 import adminInfo, instance, stack, variable, activity_log, user, aws
 
 
 api_router = APIRouter()

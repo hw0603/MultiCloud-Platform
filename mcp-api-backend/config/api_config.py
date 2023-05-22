@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     ALGORITHM = "HS256"
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    SECRET_VAULT: bytes = os.getenv("SECRET_VAULT", b"h0aW9hCz_wmEplvlFdoWjqx2pund1gGlcoZ2eqvYpCM=")
     ALL_ROLE = ["user", "system_manager", "team_manager"]
 
     class Config:
