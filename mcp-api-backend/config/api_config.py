@@ -16,8 +16,9 @@ class Settings(BaseSettings):
     USE_TEST_API: bool = os.getenv("USE_TEST_API", False)
 
     API_V1_URL: str = "/api/v1"
-    SECRET_KEY: str = ""
+    
     ALGORITHM: str = "HS256"
+    JWT_SECRET_KEY: str =os.getenv("JWT_SECRET_KEY", "key")
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     ALL_ROLE: list = ["user", "system_manager", "team_manager"]

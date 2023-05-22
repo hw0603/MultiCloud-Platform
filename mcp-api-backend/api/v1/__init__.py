@@ -3,8 +3,10 @@ __all__ = [
     "instance",
     "testapi",
     "stack",
+    "user",
     "variable",
     "activity_log",
     "user",
     "deploy"
+    "auth"
 ]
