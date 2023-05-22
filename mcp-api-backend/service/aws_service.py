@@ -44,7 +44,8 @@ async def create_new_aws_profile(
             team=current_user.team,
             action=f"Create AWS account {aws.team} {aws.environment}",
         )
-        return {"result": f"Create AWS account {aws.team} {aws.environment}"}
+        #return {"result": f"Create AWS account {aws.team} {aws.environment}"}
+        return result
     
     except Exception as err:
         raise HTTPException(
