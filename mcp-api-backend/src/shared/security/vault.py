@@ -26,5 +26,5 @@ def vault_decrypt(func):
 
 
 def get_password_hash(password: str) -> str:
-    pwd_context = CryptContext(schemas=["bcrypt"], deprecated="auto")
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     return pwd_context.hash(password)

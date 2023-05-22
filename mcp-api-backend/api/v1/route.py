@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.v1 import adminInfo, instance, stack, variable, activity_log, user, aws, gcp, azure, custom_provider
+from api.v1 import adminInfo, instance, stack, variable, activity_log, user, aws, gcp, azure, custom_provider, auth
 
 
 api_router = APIRouter()
@@ -18,3 +18,4 @@ api_router.include_router(aws.router, prefix="/aws", tags=["Aws"])
 api_router.include_router(gcp.router, prefix="/gcp", tags=["Gcp"])
 api_router.include_router(azure.router, prefix="/azure", tags=["Azure"])
 api_router.include_router(custom_provider.router, prefix="/custom_provider", tags=["CustomProvider"])
+api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])

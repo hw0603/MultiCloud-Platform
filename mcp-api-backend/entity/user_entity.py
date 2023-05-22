@@ -12,7 +12,7 @@ class UserCreate(UserBase):
     password: str
     email: EmailStr = None
     is_active: bool = True
-    #team: List[str] = []
+    team: str
     role: List[str] = []
 
 
@@ -20,8 +20,13 @@ class UserCreateMaster(UserCreate):
     pass 
 
 
-class UserUpdate(UserCreate):
-    pass
+class UserUpdate(UserBase):
+    fullname: constr(strip_whitespace=True)
+    password: str
+    email: str = None
+    is_active: bool = True
+    team: str
+    role: List[str] = []
 
 
 class UserAuthenticate(UserBase):
@@ -56,4 +61,4 @@ class TokenPayload(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str = None
+    user_id: int = None

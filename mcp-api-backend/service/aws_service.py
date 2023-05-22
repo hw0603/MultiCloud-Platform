@@ -7,6 +7,7 @@ import repository.aws_repository as crud_aws
 import entity.aws_entity as schemas_aws
 import entity.user_entity as schemas_user
 from src.shared.security import deps
+from db.connection import get_db
 
 
 async def create_new_aws_profile(
