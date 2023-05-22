@@ -1,60 +1,27 @@
-from typing import Optional
+import datetime
 
-from pydantic import BaseModel, Field, constr
+from sqlalchemy.orm import Session
 
-
-class DeployDetailBase(BaseModel):
-    name: constr(strip_whitespace=True)
-    stack_name: constr(strip_whitespace=True)
-    stack_branch: Optional[constr(strip_whitespace=True)] = Field("", example="")
-    username: constr(strip_whitespace=True)
-    squad: constr(strip_whitespace=True)
-    environment: constr(strip_whitespace=True)
-    variables: constr(strip_whitespace=True)
+import entity.deploy_detail_entity as schemas_deploy
+import db.model.deploy_detail_model as models
 
 
-class DeployDetailCreate(BaseModel):
-    name: constr(strip_whitespace=True)
-    squad: constr(strip_whitespace=True)
-    stack_name: constr(strip_whitespace=True)
-    stack_branch: Optional[constr(strip_whitespace=True)] = Field("", example="")
-    environment: constr(strip_whitespace=True)
-    start_time: Optional[constr(strip_whitespace=True)] = Field(
-        None, example="30 7 * * 0-4"
+def create_new_deploy_detail(
+    db: Session,
+    deploy_id: int,
+    stack_id: int,
+    deploy_detail: schemas_deploy.DeployDetailCreate,
+):
+    db_deploy_detail = models.DeployDetail(
+        deploy_id=deploy_id,
+        stack_id=stack_id,
+        tfvar_file=deploy_detail.tfvar_file,
+        variables=deploy_detail.variables,
     )
-    destroy_time: Optional[constr(strip_whitespace=True)] = Field(
-        None, example="30 18 * * 0-4"
-    )
-    tfvar_file: Optional[constr(strip_whitespace=True)] = Field(
-        "", example="terraform.tfvars"
-    )
-    project_path: Optional[constr(strip_whitespace=True)] = Field("", example="")
-    variables: dict
-
-
-class DeployDetailCreateMaster(DeployDetailCreate):
-    squad: constr(strip_whitespace=True)
-
-
-class DeployDetailDeleteMaster(BaseModel):
-    squad: constr(strip_whitespace=True)
-
-
-class DeployDetailUpdate(BaseModel):
-    start_time: constr(strip_whitespace=True)
-    destroy_time: constr(strip_whitespace=True)
-    stack_branch: Optional[constr(strip_whitespace=True)] = Field("", example="")
-    tfvar_file: Optional[constr(strip_whitespace=True)] = Field(
-        "", example="terraform.tfvars"
-    )
-    project_path: Optional[constr(strip_whitespace=True)] = Field("", example="")
-    variables: dict
-
-
-class Deploy(DeployDetailBase):
-    id: int
-    task_id: constr(strip_whitespace=True)
-    user_id: int
-
-    class Config:
-        orm_mode = True
+    try:
+        db.add(db_deploy_detail)
+        db.commit()
+        db.refresh(db_deploy_detail)
+        return db_deploy_detail
+    except Exception as err:
+        raise err
