@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends
 
-from entity import deploy_detail_entity as schemas_deploy
+from entity import deploy_entity as schemas_deploy
 from service import deploy_service
 
 router = APIRouter()
 
 
 @router.post("/", status_code=202)
-async def deploy_infra_by_stack_name(
-    create_deploy: schemas_deploy.DeployDetailCreate = Depends(
-        deploy_service.deploy_infra_by_stack_name
+async def deploy_infra_from_list(
+    create_deploy: schemas_deploy.DeployCreate = Depends(
+        deploy_service.deploy_infra_from_list
     ),
 ):
     return create_deploy
