@@ -7,5 +7,10 @@ __all__ = [
     "activity_log",
     "user",
     "deploy",
-    "auth"
+    "auth",
+    "aws",
+    "gcp",
+    "azure",
+    "custom_provider",
+    # "testapi"
 ]
