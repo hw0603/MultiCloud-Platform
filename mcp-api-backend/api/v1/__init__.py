@@ -1,7 +1,6 @@
 __all__ = [
     "adminInfo",
     "instance",
-    "testapi",
     "stack",
     "user",
     "variable",

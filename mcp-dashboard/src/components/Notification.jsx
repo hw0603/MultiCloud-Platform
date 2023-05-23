@@ -15,13 +15,6 @@ const Notification = () => {
           <p className="font-semibold text-lg dark:text-gray-200">
             알림
           </p>
-          <button
-            type="button"
-            className="text-white text-xs rounded p-1 px-2 bg-orange-theme "
-          >
-            {" "}
-            5 New
-          </button>
         </div>
         <Button
           icon={<MdOutlineCancel />}

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Sidebar, Navbar } from './components';
 import "./App.css";
 import { useStateContext } from "./contexts/ContextProvider";
-import { Home, Dashboard, Deploy, User, Stack, Log, OpLog, Setting } from './pages';
+import { Home, Dashboard, Deploy, User, Stack, Log, OpLog, Setting, CreateStack } from './pages';
 import { AWS } from "./pages/authenticaion";
 
 function App() {
@@ -26,8 +26,7 @@ function App() {
             <div>
               <Routes>
                 {/* home */}
-                <Route path="/" element={<Home />} />
-                <Route path="/home" element={<Home />} />
+                <Route path="/" element={<Navigate to="/dashboard" />} />
 
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/deploy" element={<Deploy />} />
@@ -36,8 +35,11 @@ function App() {
                 <Route path="/opLog" element={<OpLog />} />
                 <Route path="/setting" element={<Setting />} />
                 <Route path="/stack" element={<Stack />} />
+                <Route path="/stack/new" element={<CreateStack />} />
 
                 <Route path="AWS" element={<AWS />} />
+
+                <Route path="*" element={<Navigate to="/dashboard" />} />
               </Routes>
             </div>
           </div>
