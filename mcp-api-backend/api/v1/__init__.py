@@ -2,6 +2,10 @@ __all__ = [
     "adminInfo",
     "instance",
     "stack",
+    "user",
     "variable",
-    "activity_log"
+    "activity_log",
+    "user",
+    "deploy",
+    "auth"
 ]

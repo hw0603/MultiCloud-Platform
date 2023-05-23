@@ -2,7 +2,7 @@ import datetime
 
 from db.session import Base 
 from sqlalchemy import Column, DateTime, Integer, String, UniqueConstraint, ForeignKey
-
+from sqlalchemy.orm import relationship
 
 class Azure_provider(Base):
     __tablename__ = "azure_provider"

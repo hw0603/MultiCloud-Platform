@@ -1,0 +1,134 @@
+import datetime
+
+from sqlalchemy import exc
+from sqlalchemy.orm import Session
+import db.model.azure_model as models
+import entity.azure_entity as schemas_azure
+from src.shared.security.vault import vault_encrypt, vault_decrypt
+
+
+@vault_encrypt
+def encrypt(secreto):
+    try:
+        return secreto
+    except Exception as err:
+        raise err
+
+
+@vault_decrypt
+def decrypt(secreto):
+    try:
+        return secreto
+    except Exception as err:
+        raise err
+    
+
+def create_azure_profile(db: Session, azure: schemas_azure.AzureBase):
+    encrypt_client_id = encrypt(azure.client_id)
+    encrypt_client_secret = encrypt(azure.client_secret)
+
+    db_azure = models.Azure_provider(
+        client_id=encrypt_client_id,
+        client_secret=encrypt_client_secret,
+        subscription_id=azure.subscription_id,
+        environment=azure.environment,
+        tenant_id=azure.tenant_id,
+        created_at=datetime.datetime.now(),
+        team=azure.team,
+    )
+    try:
+        db.add(db_azure)
+        db.commit()
+        db.refresh(db_azure)
+        return db_azure
+    except exc.IntegrityError as err:
+        raise ValueError(str(err.__dict__["orig"]))
+    except Exception as err:
+        raise err
+    
+
+def get_credentials_azure_profile(db: Session, environment: str, team: str):
+    get_client_id = (
+        db.query(models.Azure_provider.client_id)
+        .filter(models.Azure_provider.environment == environment)
+        .filter(models.Azure_provider.team == team)
+        .first()
+    )
+    get_client_secret = (
+        db.query(models.Azure_provider.client_secret)
+        .filter(models.Azure_provider.environment == environment)
+        .filter(models.Azure_provider.team == team)
+        .first()
+    )
+    subscription_id = (
+        db.query(models.Azure_provider.subscription_id)
+        .filter(models.Azure_provider.environment == environment)
+        .filter(models.Azure_provider.team == team)
+        .first()
+    )
+    tenant_id = (
+        db.query(models.Azure_provider.tenant_id)
+        .filter(models.Azure_provider.environment == environment)
+        .filter(models.Azure_provider.team == team)
+        .first()
+    )
+
+    try:
+        return {
+            "client_id": decrypt(get_client_id[0]),
+            "client_secret": decrypt(get_client_secret[0]),
+            "subscription_id": subscription_id[0],
+            "tenant_id": tenant_id[0],
+        }
+    except Exception as err:
+        raise err
+
+
+def get_team_azure_profile(db: Session, team: str, environment: str):
+    try:
+        if environment != None:
+            return (
+                db.query(models.Azure_provider)
+                .filter(models.Azure_provider.team == team)
+                .filter(models.Azure_provider.environment == environment)
+                .first()
+            )
+        result = []
+        for i in team:
+            result.extend(
+                db.query(models.Azure_provider)
+                .filter(models.Azure_provider.team == i)
+                .all()
+            )
+        return set(result)
+    except Exception as err:
+        raise err
+    
+
+def get_all_azure_profile(db: Session):
+    try:
+        return db.query(models.Azure_provider).all()
+    except Exception as err:
+        raise err
+    
+
+def delete_azure_profile_by_id(db: Session, azure_profile_id: int):
+    try:
+        db.query(models.Azure_provider).filter(models.Azure_provider.id == azure_profile_id).delete()
+        db.commit()
+        return {azure_profile_id: "deleted", "azure_profile_id": azure_profile_id}
+    except Exception as err:
+        raise err
+    
+
+def get_cloud_account_by_id(db:Session, provider_id: int):
+    try:
+        return(
+            db.query(models.Azure_provider)
+            .filter(models.Azure_provider.id == provider_id)
+            .first()
+        )
+    except Exception as err:
+        raise err
+    
+    
