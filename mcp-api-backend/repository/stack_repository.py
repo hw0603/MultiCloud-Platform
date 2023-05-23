@@ -127,6 +127,29 @@ def get_stack_by_id(db: Session, stack_id: int):
         raise err
 
 
+def get_stack_by_name_and_team(
+    db: Session, stack_name: str, team_access: str,
+    skip: int = 0, limit: int = 100
+):
+    try:
+        global_stacks = (
+            db.query(models.Stack)
+            .filter(models.Stack.team_access.contains("*"))
+            .filter(models.Stack.stack_name == stack_name)
+            .first()
+        )
+        team_stacks =  (
+            db.query(models.Stack)
+            .filter(models.Stack.stack_name == stack_name)
+            .filter(models.Stack.team_access.contains(team_access))
+            .first()
+        )
+
+        return team_stacks if team_stacks else global_stacks
+    except Exception as err:
+        raise err
+
+
 def delete_stack_by_id(db: Session, stack_id: int):
     try:
         db.query(models.Stack).filter(models.Stack.stack_id == stack_id).delete()

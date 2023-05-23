@@ -26,6 +26,7 @@ class Deploy(Base):
     created_at = Column(DateTime, default=datetime.datetime.now())
     updated_at = Column(DateTime)
     detail_cnt = Column(Integer)
+    task_id = Column(String(300))
 
     # Relationships
     task_rel = relationship("Task")
