@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Sidebar, Navbar } from './components';
 import "./App.css";
 import { useStateContext } from "./contexts/ContextProvider";
-import { Home, Dashboard, Deploy, User, Stack, Log, OpLog, Setting } from './pages';
+import { Home, Dashboard, Deploy, User, Stack, Log, OpLog, Setting, CreateStack } from './pages';
 import { AWS } from "./pages/authenticaion";
 
 function App() {
@@ -35,6 +35,7 @@ function App() {
                 <Route path="/opLog" element={<OpLog />} />
                 <Route path="/setting" element={<Setting />} />
                 <Route path="/stack" element={<Stack />} />
+                <Route path="/stack/new" element={<CreateStack />} />
 
                 <Route path="AWS" element={<AWS />} />
 

@@ -2,11 +2,13 @@ import React, { useLayoutEffect } from "react";
 import Button from "../components/Button";
 import { useStateContext } from "../contexts/ContextProvider";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 
 const Stack = () => {
     const { mainColor, base_url, stacks, setStacks } = useStateContext();
+    const navigate = useNavigate();
     useLayoutEffect(() => {
         console.log("useLayoutEffect");
         axios.get(`${base_url}/api/v1/stacks`)
@@ -31,6 +33,9 @@ const Stack = () => {
                         bgColor={mainColor}
                         text="새 스택 생성"
                         borderRadius="10px"
+                        onClick = {() => {
+                            navigate('/stack/new');
+                        }}
                     />
                 </div>
 

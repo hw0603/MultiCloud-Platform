@@ -1,5 +1,5 @@
 import React from "react";
-
+import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 
 const Button = ({
@@ -11,13 +11,14 @@ const Button = ({
   text,
   borderRadius,
   width,
+  onClick
 }) => {
   const { setIsClicked, initialState } = useStateContext();
-
+  const navigate = useNavigate();
   return (
     <button
       type="button"
-      onClick={() => setIsClicked(initialState)}
+      onClick={onClick}
       style={{ backgroundColor: bgColor, color, borderRadius }}
       className={` text-${size} p-3 w-${width} hover:drop-shadow-xl hover:bg-${bgHoverColor}`}
     >
