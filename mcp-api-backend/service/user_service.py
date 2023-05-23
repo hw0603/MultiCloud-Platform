@@ -31,9 +31,9 @@ async def create_init_user(passwd: UserInit, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail=str(err))
 
 async def create_user(
-        user: UserCreate, 
-        current_user: User = Depends(deps.get_current_active_user),
-        db: Session = Depends(get_db)
+    user: UserCreate, 
+    current_user: User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db)
 ):
     # 요청한 사용자가 지원하는 role을 갖고있는지 확인
     roles = {"system_manager", "team_manager", "user"}
@@ -80,10 +80,10 @@ async def create_user(
         raise HTTPException(status_code=400, detail=str(err))
 
 async def get_user_list(
-        current_user: User = Depends(deps.get_current_active_user),
-        skip: int = 0,
-        limit: int = 100,
-        db: Session = Depends(get_db)
+    current_user: User = Depends(deps.get_current_active_user),
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
 ):
     # 일반 user는 사용자 목록을 조회할 수 없음
     if not crud_users.is_superuser(db, current_user):  
@@ -100,9 +100,9 @@ async def get_user_list(
         raise HTTPException(status_code=400, detail=str(err))
     
 async def get_user_by_id_or_name(
-        user,
-        current_user: User = Depends(deps.get_current_active_user),
-        db: Session = Depends(get_db),
+    user,
+    current_user: User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     if not crud_users.is_superuser(db, current_user):
         raise HTTPException(status_code=403, detail="해당 작업에 대한 권한이 없습니다.")
@@ -122,10 +122,10 @@ async def get_user_by_id_or_name(
         raise HTTPException(status_code=400, detail=str(err))
 
 async def update_user(
-        user_id: str,
-        user: UserUpdate,
-        current_user: User = Depends(deps.get_current_active_user),
-        db: Session = Depends(get_db)
+    user_id: str,
+    user: UserUpdate,
+    current_user: User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db)
 ):
     # 일반 user는 사용자 정보를 수정할 수 없음
     if not crud_users.is_superuser(db, current_user):
