@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from api.v1.route import api_router
 from db.session import async_engine, engine
 from db.model import *
@@ -9,6 +10,19 @@ app = FastAPI(
     version="1.0.0",
 )
 app.include_router(api_router, prefix="/api/v1")
+
+# CORS 설정
+origins = [
+    # "http://localhost:3000",
+    "*" # TODO: 배포시 수정
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"], # TODO: 배포시 수정
+    allow_headers=["*"], # TODO: 배포시 수정
+)
 
 
 # DB 테이블 생성
