@@ -27,10 +27,10 @@ def create_user(db: Session, user: schemas.UserCreate):
 def create_init_user(db: Session, password: str):
     db_user = models.User(
         username=settings.INIT_USER.get("username"),
-        password=password,  # TODO: password hashing 하는 것으로 바꿔야 함
+        password=get_password_hash(password),  # TODO: password hashing 하는 것으로 바꿔야 함
         fullname=settings.INIT_USER.get("fullname"),
         email=settings.INIT_USER.get("email"),
-        role="{System_Manager : True}",
+        role=["system_manager"],
         team="team",
         is_active=True
     )
@@ -100,7 +100,7 @@ def is_active(db: Session, user: schemas.UserCreate):
 
 def is_superuser(db: Session, user: schemas.UserCreate) -> bool:
     try:
-        super_role = ["team_manager"]
+        super_role = {"team_manager", "system_manager"}
         return bool(set(user.role).intersection(super_role))
     except Exception as err:
         raise err

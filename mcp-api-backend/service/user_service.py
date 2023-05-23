@@ -4,6 +4,7 @@ from fastapi import HTTPException, Depends
 from entity.user_entity import UserUpdate
 from config.api_config import settings
 from repository import user_repository as crud_users
+from repository import team_repository as crud_teams
 from sqlalchemy.orm import Session
 from db.connection import get_db
 from utils.utils import object_as_dict
@@ -30,12 +31,12 @@ async def create_init_user(passwd: UserInit, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail=str(err))
 
 async def create_user(
-        user: UserCreate, 
-        current_user: User = Depends(deps.get_current_active_user),
-        db: Session = Depends(get_db)
+    user: UserCreate, 
+    current_user: User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db)
 ):
     # 요청한 사용자가 지원하는 role을 갖고있는지 확인
-    roles = ["system_manager", "team_manager", "user"]
+    roles = {"system_manager", "team_manager", "user"}
     if not all(item in roles for item in user.role):
         raise HTTPException(
             status_code=403,
@@ -57,6 +58,14 @@ async def create_user(
                 status_code=403,
                 detail=f"{user.role} 권한을 가진 사용자를 추가할 권한이 없습니다."
             )
+    
+    # 관리자는 팀 매니저 계정을 발급하여 팀을 생성할 수 있음
+    if ((crud_users.is_superuser(db, user)) and (crud_users.is_superuser(db, current_user))):
+        # 생성할 계정에 대한 팀이 존재하는지 확인 후 없다면 생성
+        if not (crud_teams.get_team_by_name(db, user.team)):
+            crud_teams.create_team(db=db, team_name=user.team)
+
+
     # 추가하려는 사용자가 이미 존재하는지 확인
     db_user = crud_users.get_user_by_username(db, username=user.username)
     if db_user:
@@ -71,10 +80,10 @@ async def create_user(
         raise HTTPException(status_code=400, detail=str(err))
 
 async def get_user_list(
-        current_user: User = Depends(deps.get_current_active_user),
-        skip: int = 0,
-        limit: int = 100,
-        db: Session = Depends(get_db)
+    current_user: User = Depends(deps.get_current_active_user),
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
 ):
     # 일반 user는 사용자 목록을 조회할 수 없음
     if not crud_users.is_superuser(db, current_user):  
@@ -91,9 +100,9 @@ async def get_user_list(
         raise HTTPException(status_code=400, detail=str(err))
     
 async def get_user_by_id_or_name(
-        user,
-        current_user: User = Depends(deps.get_current_active_user),
-        db: Session = Depends(get_db),
+    user,
+    current_user: User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     if not crud_users.is_superuser(db, current_user):
         raise HTTPException(status_code=403, detail="해당 작업에 대한 권한이 없습니다.")
@@ -113,10 +122,10 @@ async def get_user_by_id_or_name(
         raise HTTPException(status_code=400, detail=str(err))
 
 async def update_user(
-        user_id: str,
-        user: UserUpdate,
-        current_user: User = Depends(deps.get_current_active_user),
-        db: Session = Depends(get_db)
+    user_id: str,
+    user: UserUpdate,
+    current_user: User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db)
 ):
     # 일반 user는 사용자 정보를 수정할 수 없음
     if not crud_users.is_superuser(db, current_user):
