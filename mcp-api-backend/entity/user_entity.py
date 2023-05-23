@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr, constr
 
 class UserBase(BaseModel):
     username: constr(strip_whitespace=True)
+    team: constr(strip_whitespace=True)
 
 
 class UserCreate(UserBase):

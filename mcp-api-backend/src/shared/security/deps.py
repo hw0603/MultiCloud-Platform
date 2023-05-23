@@ -1,6 +1,9 @@
 """
 의존성 관리 모듈
 """
+from typing import Generator
+from db.session import SessionLocal
+
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
@@ -49,3 +52,11 @@ def get_current_active_user(
     if not crud_users.is_active(db, current_user):
         raise HTTPException(status_code=400, detail="비활성화된 사용자입니다.")
     return current_user
+
+def get_db() -> Generator:
+    try:
+        db = SessionLocal()
+        yield db
+    finally:
+        db.close()
+

@@ -3,7 +3,7 @@ from cryptography.fernet import Fernet
 from passlib.context import CryptContext
 
 
-def valut_encrypt(func):
+def vault_encrypt(func):
     def wrap(*args, **kwargs):
         key = settings.SECRET_VAULT
         f = Fernet(key)
@@ -14,7 +14,7 @@ def valut_encrypt(func):
     return wrap
 
 
-def valut_decrypt(func):
+def vault_decrypt(func):
     def wrap(*args, **kwargs):
         key = settings.SECRET_VAULT
         f = Fernet(key)

@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str =os.getenv("JWT_SECRET_KEY", "key")
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    SECRET_VAULT: bytes = os.getenv("SECRET_VAULT", b"h0aW9hCz_wmEplvlFdoWjqx2pund1gGlcoZ2eqvYpCM=")
     ALL_ROLE: list = ["user", "system_manager", "team_manager"]
 
     class Config:
