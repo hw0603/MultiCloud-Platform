@@ -9,8 +9,9 @@ const initialState = {
 
 export const ContextProvider = ({ children }) => {
   const [isClicked, setIsClicked] = useState(initialState);
+  const [stacks, setStacks] = useState([]);
   const mainColor = "#03C9D7";
-
+  const base_url = 'http://localhost:8000';
   const handleClick = (clicked) =>
     setIsClicked({ ...initialState, [clicked]: true });
 
@@ -23,6 +24,9 @@ export const ContextProvider = ({ children }) => {
         isClicked,
         initialState,
         setIsClicked,
+        base_url,
+        stacks,
+        setStacks,
       }}
     >
       {children}

@@ -1,12 +1,26 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect } from "react";
+import { useStateContext } from "../contexts/ContextProvider";
 
 const Home = () => {
+    // const {base_url} = useStateContext();
+    // useEffect(() => {
+    //     // const axios = require('axios');
+    //     axios.get(`${base_url}/api/v1/`)
+    //         .then((response) => {
+    //             console.log(response)
+    //         })
+    //         .catch((error) => {
+    //             console.log(error)
+    //         })
+    // }, []);
+
     return (
         <>
             <div className="mt-12">
                 <div>
                     {/* <h1 className="flex flex-wrap justify-start text-xl ml-20 mb-4">개요</h1> */}
-                    
+
                     <div className="flex flex-wrap justify-center">
                         <div className="bg-gray-200 m-3 p-4 rounded-2xl w-3/5 border-1">
                             <div className="flex justify-between gap-1">
