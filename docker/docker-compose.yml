@@ -343,6 +343,11 @@ services:
     restart: always
     environment:
       IN_CONTAINER: "true"
+      AIRFLOW_URL: airflow-webserver:8080
+      GRAFANA_URL: grafana:3000
+    depends_on:
+      - airflow-webserver
+      - grafana
     volumes:
       - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
   

@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     ALL_ROLE: list = ["user", "system_manager", "team_manager"]
 
     class Config:
+        # Dotenv 파일과 환경변수에 동일한 변수가 선언되면 환경변수가 항상 우선임
         env_file = "./config/.env"
 
 
