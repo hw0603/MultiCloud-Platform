@@ -54,8 +54,8 @@ x-airflow-common:
 
   # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:latest-python3.10}
   build:
-    context: .
-    dockerfile: ./Dockerfile
+    context: ${AIRFLOW_PROJ_DIR:-../airflow}
+    dockerfile: Dockerfile
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
