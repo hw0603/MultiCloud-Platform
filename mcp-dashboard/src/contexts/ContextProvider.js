@@ -9,6 +9,7 @@ const initialState = {
 
 export const ContextProvider = ({ children }) => {
   const [isClicked, setIsClicked] = useState(initialState);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [stacks, setStacks] = useState([]);
   const mainColor = "#03C9D7";
   const base_url = 'http://localhost:8000';
@@ -27,6 +28,8 @@ export const ContextProvider = ({ children }) => {
         base_url,
         stacks,
         setStacks,
+        isAuthorized,
+        setIsAuthorized
       }}
     >
       {children}

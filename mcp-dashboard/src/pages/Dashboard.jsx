@@ -3,17 +3,6 @@ import React, { useEffect } from "react";
 import { useStateContext } from "../contexts/ContextProvider";
 
 const Dashboard = () => {
-    const {base_url} = useStateContext();
-    useEffect(() => {
-        axios.get(`${base_url}/api/v1/instance/list`)
-            .then((response) => {
-                console.log(response)
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-    }, []);
-
     return (
         <>
             <div className="mt-12">
