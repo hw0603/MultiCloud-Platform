@@ -342,7 +342,7 @@ services:
       - "8000:8000"
     restart: always
     environment:
-      IN_CONTAINER: "true"
+      IN_CONTAINER: True
       AIRFLOW_URL: airflow-webserver:8080
       GRAFANA_URL: grafana:3000
       BROKER_SERVER: "rabbit"
@@ -362,7 +362,7 @@ services:
       "celery", "--app", "src.worker.tasks.terraform_worker", "worker", "--loglevel=info", "-c", "8", "-E", "-Q", "any,team,team1,team2"
     ]
     environment:
-      IN_CONTAINER: "true"
+      IN_CONTAINER: True
       BROKER_USER: admin
       BROKER_PASSWD: admin
       BROKER_SERVER: "rabbit"
