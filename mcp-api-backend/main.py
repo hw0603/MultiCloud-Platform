@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.v1.route import api_router
 from db.session import async_engine, engine
 from db.model import *
+import os
 
 app = FastAPI(
     title="Multi Cloud Platform API",
@@ -47,4 +48,7 @@ async def init_tables():
 
 @app.get("/", tags=["Main"])
 def main():
-    return {"message": "API Server main page"}
+    return {
+        "message": "API Server main page",
+        "docker": bool(os.getenv("IN_CONTAINER", False))
+    }
