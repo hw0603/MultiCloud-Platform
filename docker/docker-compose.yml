@@ -45,6 +45,7 @@
 # Feel free to modify this file to suit your needs.
 ---
 version: '3.8'
+name: multicloud-platform
 x-airflow-common:
   &airflow-common
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
@@ -77,9 +78,9 @@ x-airflow-common:
     # for other purpose (development, test and especially production usage) build/extend Airflow image.
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   volumes:
-    - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
-    - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
-    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-../airflow}/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-../airflow}/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR:-../airflow}/plugins:/opt/airflow/plugins
     # - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
@@ -329,7 +330,36 @@ services:
       - 3001:3000
     volumes:
       - grafana-volume:/var/lib/grafana
-      - ./provisioning:/etc/grafana/provisioning  # 그라파나 Datasource 프로비저닝
+      - ${GRAFANA_DIR:-../grafana}/provisioning:/etc/grafana/provisioning  # 그라파나 Datasource 프로비저닝
+  
+  api-backend:
+    build:
+      context: ${API_BACKEND_DIR:-../mcp-api-backend}
+      dockerfile: Dockerfile
+    image: mcp-api-backend
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
+  
+  worker:
+    image: mcp-api-backend
+    entrypoint: [
+        "watchmedo", "auto-restart", "--directory=./", "--pattern='*.py'", "--recursive",
+        "--",
+        "celery", "--app", "src.worker.tasks.terraform_worker", "worker", "--loglevel=info", "-c", "8", "-E", "-Q", "any,team,team1,team2"
+      ]
+    environment:
+      BROKER_USER: admin
+      BROKER_PASSWD: admin
+    depends_on:
+      - api-backend
+      - rabbit
+      - redis
+    restart: always
+    volumes:
+      - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
 
 
 
