@@ -1,6 +1,5 @@
 import datetime
 from unittest import result
-from numpy import square
 from sqlalchemy.orm import Session
 import db.model.user_model as models
 from config.api_config import settings
