@@ -347,6 +347,11 @@ services:
       GRAFANA_URL: grafana:3000
       BROKER_SERVER: "rabbit"
       BACKEND_SERVER: "redis"
+      DB_HOST: ${DB_HOST:-localhost}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USER=: ${DB_USER:-multicloud}
+      DB_DATABASE: ${DB_DATABASE:-mcp}
+      DB_PASSWORD: ${DB_PASSWORD:-type_your_password}
     depends_on:
       - airflow-webserver
       - grafana
