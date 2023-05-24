@@ -1,0 +1,17 @@
+apiVersion: 1
+
+deleteDatasources:
+  - name: MCP
+    orgId: 1
+
+datasources:
+  - name: MCP
+    type: mysql
+    uid: ${DATASOURCE_UID}
+    url: ${DB_HOST}:${DB_PORT}
+    user: ${DB_USER}
+    jsonData:
+      database: ${DB_DATABASE}
+    secureJsonData:
+      password: ${DB_PASSWORD}
+    editable: false
