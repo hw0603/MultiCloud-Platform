@@ -282,3 +282,8 @@ credential.tf
 
 # Testing API
 /mcp-api-backend/api/v1/testapi.py
+
+# Airflow
+/airflow/config
+/airflow/logs
+/airflow/plugins
