@@ -332,6 +332,7 @@ services:
       - grafana-volume:/var/lib/grafana
       - ${GRAFANA_DIR:-../grafana}/provisioning:/etc/grafana/provisioning  # 그라파나 Datasource 프로비저닝
   
+  # API Server
   api-backend:
     build:
       context: ${API_BACKEND_DIR:-../mcp-api-backend}
@@ -340,19 +341,25 @@ services:
     ports:
       - "8000:8000"
     restart: always
+    environment:
+      IN_CONTAINER: "true"
     volumes:
       - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
   
+  # API Server Celery Worker
   worker:
     image: mcp-api-backend
     entrypoint: [
-        "watchmedo", "auto-restart", "--directory=./", "--pattern='*.py'", "--recursive",
-        "--",
-        "celery", "--app", "src.worker.tasks.terraform_worker", "worker", "--loglevel=info", "-c", "8", "-E", "-Q", "any,team,team1,team2"
-      ]
+      "watchmedo", "auto-restart", "--directory=./", "--recursive",
+      "--",
+      "celery", "--app", "src.worker.tasks.terraform_worker", "worker", "--loglevel=info", "-c", "8", "-E", "-Q", "any,team,team1,team2"
+    ]
     environment:
+      IN_CONTAINER: "true"
       BROKER_USER: admin
       BROKER_PASSWD: admin
+      BROKER_SERVER: "rabbit"
+      BACKEND_SERVER: "redis"
     depends_on:
       - api-backend
       - rabbit
