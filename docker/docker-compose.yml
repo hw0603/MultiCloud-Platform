@@ -345,6 +345,8 @@ services:
       IN_CONTAINER: "true"
       AIRFLOW_URL: airflow-webserver:8080
       GRAFANA_URL: grafana:3000
+      BROKER_SERVER: "rabbit"
+      BACKEND_SERVER: "redis"
     depends_on:
       - airflow-webserver
       - grafana
