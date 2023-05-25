@@ -312,6 +312,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"  # rabbitmq management plugin
+    restart: on-failure
   
   # Grafana
   grafana:
@@ -328,6 +329,7 @@ services:
       - DATASOURCE_UID=${DATASOURCE_UID:-type_some_uid}
     ports:
       - 3001:3000
+    restart: on-failure
     volumes:
       - grafana-volume:/var/lib/grafana
       - ${GRAFANA_DIR:-../grafana}/provisioning:/etc/grafana/provisioning  # 그라파나 Datasource 프로비저닝
