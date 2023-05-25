@@ -12,5 +12,6 @@ __all__ = [
     "gcp",
     "azure",
     "custom_provider",
+    "health",
     # "testapi"
 ]
