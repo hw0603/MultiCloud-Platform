@@ -6,10 +6,10 @@ import profilePic from "../data/profilePic.png";
 import { UserProfile, Notification } from ".";
 import { useStateContext } from "../contexts/ContextProvider";
 
-const NavButton = ({ customFunc, icon, color, dotColor }) => (
+const NavButton = ({ onClickFunc, icon, color, dotColor }) => (
   <button
     type="button"
-    onClick={() => customFunc()}
+    onClick={() => onClickFunc()}
     style={{ color }}
     className="relative text-xl rounded-full p-3 hover:bg-light-gray"
   >
@@ -26,14 +26,23 @@ const Navbar = () => {
     mainColor,
     handleClick,
     isClicked,
+    isAuthorized,
+    setIsAuthorized
   } = useStateContext();
 
   return (
     <div className="flex justify-end p-2 md:ml-6 md:mr-6 relative">
       <div className="flex">
+        <button onClick={() => {
+            setIsAuthorized(false);
+            localStorage.clear();
+        }}>
+          logout
+        </button>
+        
         <NavButton
           dotColor="#EA4336"
-          customFunc={() => handleClick("notification")}
+          onClickFunc={() => handleClick("notification")}
           color={mainColor}
           icon={<RiNotification3Line />}
         />

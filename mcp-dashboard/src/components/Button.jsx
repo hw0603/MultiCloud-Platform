@@ -11,14 +11,15 @@ const Button = ({
   text,
   borderRadius,
   width,
-  onClick
+  onClickFunc,
+  type
 }) => {
   const { setIsClicked, initialState } = useStateContext();
   const navigate = useNavigate();
   return (
     <button
-      type="button"
-      onClick={onClick}
+      type={type}
+      onClick={onClickFunc}
       style={{ backgroundColor: bgColor, color, borderRadius }}
       className={` text-${size} p-3 w-${width} hover:drop-shadow-xl hover:bg-${bgHoverColor}`}
     >
