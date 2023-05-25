@@ -106,7 +106,7 @@ services:
       interval: 10s
       retries: 5
       start_period: 5s
-    restart: always
+    restart: on-failure
 
   redis:
     image: redis:latest
@@ -118,7 +118,7 @@ services:
       timeout: 30s
       retries: 50
       start_period: 30s
-    restart: always
+    restart: on-failure
 
   airflow-webserver:
     <<: *airflow-common
@@ -131,7 +131,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    restart: always
+    restart: on-failure
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -146,7 +146,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    restart: always
+    restart: on-failure
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -168,7 +168,7 @@ services:
       # Required to handle warm shutdown of the celery workers properly
       # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
       DUMB_INIT_SETSID: "0"
-    restart: always
+    restart: on-failure
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -183,7 +183,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    restart: always
+    restart: on-failure
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -296,7 +296,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    restart: always
+    restart: on-failure
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -340,7 +340,7 @@ services:
     image: mcp-api-backend
     ports:
       - "8000:8000"
-    restart: always
+    restart: on-failure
     environment:
       IN_CONTAINER: True
       AIRFLOW_URL: airflow-webserver:8080
@@ -376,7 +376,7 @@ services:
       - api-backend
       - rabbit
       - redis
-    restart: always
+    restart: on-failure
     volumes:
       - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
 
