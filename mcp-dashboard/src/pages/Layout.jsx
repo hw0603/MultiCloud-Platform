@@ -3,6 +3,7 @@ import { Sidebar, Navbar } from "../components";
 import { BasePage } from ".";
 
 const Layout = () => {
+    console.log("accessToken", localStorage.getItem("accessToken"));
     return (
         <div>
             <div className="flex relative dark:bg-main-dark-bg">

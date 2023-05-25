@@ -26,11 +26,19 @@ const Navbar = () => {
     mainColor,
     handleClick,
     isClicked,
+    isAuthorized,
+    setIsAuthorized
   } = useStateContext();
 
   return (
     <div className="flex justify-end p-2 md:ml-6 md:mr-6 relative">
       <div className="flex">
+        <button onClick={() => {
+            setIsAuthorized(!isAuthorized);
+            localStorage.clear();
+        }}>
+          logout
+        </button>
         <NavButton
           dotColor="#EA4336"
           customFunc={() => handleClick("notification")}
