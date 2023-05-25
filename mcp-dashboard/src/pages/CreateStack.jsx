@@ -81,7 +81,7 @@ const CreateStack = () => {
                         text="새 스택 생성"
                         color="white"
                         borderRadius="10px"
-                        onClick={createStackButtonClicked}
+                        onClickFunc={() => createStackButtonClicked()}
                     />
                 </div>
             </div>

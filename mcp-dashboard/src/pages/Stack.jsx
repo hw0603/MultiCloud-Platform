@@ -33,7 +33,7 @@ const Stack = () => {
                         bgColor={mainColor}
                         text="새 스택 생성"
                         borderRadius="10px"
-                        onClick = {() => {
+                        onClickFunc = {() => {
                             navigate('/stack/new');
                         }}
                     />

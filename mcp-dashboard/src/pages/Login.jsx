@@ -31,7 +31,7 @@ const Login = () => {
                 if (response.data.access_token) {
                     localStorage.setItem("accessToken", `${response.data.token_type} ${response.data.access_token}`);
                 }
-                setIsAuthorized((isAuthorized) => !isAuthorized);
+                setIsAuthorized(!isAuthorized);
             })
             .catch((error) => {
                 console.log("error :", error)
