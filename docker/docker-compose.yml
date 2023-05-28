@@ -321,12 +321,15 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
       - DB_HOST=${DB_HOST:-localhost}
       - DB_PORT=${DB_PORT:-3306}
       - DB_USER=${DB_USER:-multicloud}
       - DB_DATABASE=${DB_DATABASE:-mcp}
       - DB_PASSWORD=${DB_PASSWORD:-type_your_password}
-      - DATASOURCE_UID=${DATASOURCE_UID:-type_some_uid}
+      - DB_DATASOURCE_UID=${DATASOURCE_UID:-type_some_uid}
+      - AF_DATASOURCE_UID=${DATASOURCE_UID:-type_some_uid}
     ports:
       - 3001:3000
     restart: on-failure

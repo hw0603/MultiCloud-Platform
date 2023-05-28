@@ -15,3 +15,16 @@ datasources:
     secureJsonData:
       password: ${DB_PASSWORD}
     editable: false
+  
+  - name: AirflowDB
+    type: postgres
+    
+    # uid: ${DATASOURCE_UID}
+    url: postgres:5432
+    user: airflow
+    jsonData:
+      sslmode: disable
+      database: airflow
+    secureJsonData:
+      password: airflow
+    editable: false

@@ -86,7 +86,7 @@ t4 = PythonOperator(
     task_id='task_4',
     provide_context=True,
     python_callable=sleep_seconds,
-    op_kwargs={'seconds': 60},
+    op_kwargs={'seconds': 2},
     dag=dag
 )
 
