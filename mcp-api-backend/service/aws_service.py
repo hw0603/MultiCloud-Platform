@@ -43,7 +43,7 @@ async def create_new_aws_profile(
             db=db,
             username=current_user.username,
             team=current_user.team,
-            action=f"Create AWS account {aws.team} {aws.environment}",
+            action=f"AWS Provider 생성. 팀={aws.team}, 환경={aws.environment}",
         )
         #return {"result": f"Create AWS account {aws.team} {aws.environment}"}
         return result
@@ -84,6 +84,6 @@ async def aws_account_by_id(
         db=db,
         username=current_user.username,
         team=current_user.team,
-        action=f"Delete AWS account {aws_account_id}",
+        action=f"AWS Provider 삭제. ({aws_account_id})",
     )
     return result
