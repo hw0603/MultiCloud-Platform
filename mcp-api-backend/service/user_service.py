@@ -5,6 +5,7 @@ from entity.user_entity import UserUpdate
 from config.api_config import settings
 from repository import user_repository as crud_users
 from repository import team_repository as crud_teams
+from repository import activity_logs_repository as crud_activity
 from sqlalchemy.orm import Session
 from db.connection import get_db
 from utils.utils import object_as_dict
@@ -74,7 +75,12 @@ async def create_user(
     validate_password(user.username, user.password)
     try:
         result = crud_users.create_user(db=db, user=user)
-        # TODO: logging 추가
+        crud_activity.create_activity_log(
+            db=db,
+            username=current_user.username,
+            team=current_user.team,
+            action=f"사용자 {user.username} 생성",
+        )
         return result
     except Exception as err:
         raise HTTPException(status_code=400, detail=str(err))
@@ -160,7 +166,12 @@ async def update_user(
     try:
         result = crud_users.update_user(db=db, user_id=user_id, user=user)
         print(user.role)
-        # TODO: logging 추가
+        crud_activity.create_activity_log(
+            db=db,
+            username=current_user.username,
+            team=current_user.team,
+            action=f"사용자 {user.username} 수정",
+        )
         return result
     except Exception as err:
         raise HTTPException(status_code=400, detail=str(err))
