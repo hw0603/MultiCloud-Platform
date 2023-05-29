@@ -78,6 +78,7 @@ class UserExist:
         return {
             "access_token": config_token.create_access_token(),
             "token_type": "bearer",
+            "role": user.role
         }
 
 def decode_access_token(*, token: str):

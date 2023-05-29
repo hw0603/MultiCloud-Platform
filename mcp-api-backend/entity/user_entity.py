@@ -54,6 +54,7 @@ class User(UserBase):
 class Token(BaseModel):
     token_type: str
     access_token: str
+    role: List
 
 
 class TokenPayload(BaseModel):
