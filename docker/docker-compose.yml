@@ -384,6 +384,28 @@ services:
     restart: on-failure
     volumes:
       - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
+  
+  # Remote State
+  remote-state:
+    build:
+      context: ${REMOTE_STATE_DIR:-../mcp-remote-state}
+      dockerfile: Dockerfile
+    image: mcp-remote-state
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    environment:
+      IN_CONTAINER: True
+      MCP_STORAGE_BACKEND: ${MCP_STORAGE_BACKEND:-s3}  # 스토리지 종류 (local, s3, azure, gcp, mongodb)
+      MCP_REMOTE_STATE_VER: ${MCP_REMOTE_STATE_VER:-1.0.0}
+      MCP_BUCKET: ${MCP_BUCKET:-mcp-remote-state}  # S3 Bucket 이름
+      MCP_REGION: ${MCP_REGION:-ap-northeast-2}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    depends_on:
+      - api-backend
+    volumes:
+      - ${REMOTE_STATE_DIR:-../mcp-remote-state}:/app:ro  # Read-only
 
 
 
