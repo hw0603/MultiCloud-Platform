@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 
 from entity import deploy_entity as schemas_deploy
 from service import deploy_service
+from fastapi.responses import PlainTextResponse
 
 router = APIRouter()
 
@@ -42,6 +43,19 @@ async def deploy_infra_from_list(
 # ):
 #     return get_all_deploys
 
+
+@router.get("/{run_id}")
+async def get_deploy_status(
+    get_deploy_status: schemas_deploy.DeployStatus = Depends(deploy_service.get_deploy_status),
+):
+    return get_deploy_status
+
+
+@router.get("/{run_id}/logs/{task_id}", response_class=PlainTextResponse)
+async def get_deploy_logs(
+    get_deploy_logs: str = Depends(deploy_service.get_deploy_logs),
+):
+    return get_deploy_logs
 
 # @router.get("/{deploy_id}")
 # async def get_deploy_by_id(

@@ -36,6 +36,11 @@ class DeployUpdate(BaseModel):
     destroy_time: constr(strip_whitespace=True)
 
 
+class DeployStatus(BaseModel):
+    task_id: constr(strip_whitespace=True)
+    status: constr(strip_whitespace=True)
+
+
 class Deploy(DeployBase):
     id: int
     user_id: int
