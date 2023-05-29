@@ -104,7 +104,10 @@ async def deploy_infra_from_list(
         action="List Apply"
     )
     
-    return name_of_stacks  # TODO: 반환값 확실하게
+    return {
+        "name": name_of_stacks,  # TODO: 반환값 확실하게
+        "run_id": dag_run_id
+    }
 
 
     
@@ -177,3 +180,41 @@ async def deploy_infra_from_list(
             ...
         except Exception as err:
             print(err)
+
+
+async def get_deploy_status(
+    run_id: str,
+    current_user: schemas_users.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    print(run_id)
+    status_result = airflow_service.get_task_status(
+        dag_id="mcp_deploy_dag",
+        dag_run_id=run_id
+    )
+    task_instances = status_result.get("task_instances", [])
+
+    result = []
+    for task_instance in task_instances:
+        result.append(
+            schemas_deploy.DeployStatus(
+                task_id=task_instance.get("task_id", ""),
+                status=task_instance.get("state", "")
+            )
+        )
+
+    return result
+
+async def get_deploy_logs(
+    run_id: str,
+    task_id: str,
+    current_user: schemas_users.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    print(run_id, task_id)
+    log_result = airflow_service.get_task_log(
+        dag_id="mcp_deploy_dag",
+        dag_run_id=run_id,
+        task_id=task_id
+    )
+    return log_result
