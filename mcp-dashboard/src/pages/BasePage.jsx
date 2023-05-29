@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Navigate, Route } from "react-router-dom";
 import { Home, Dashboard, Deploy, User, Stack, Log, OpLog, Setting, CreateStack, Login } from ".";
+import {AWS, GCP, Azure} from "../pages/authentication";
 
 const BasePage = () => {
     return (
@@ -17,7 +18,10 @@ const BasePage = () => {
             <Route path="/stack" element={<Stack />} />
             <Route path="/stack/new" element={<CreateStack />} />
 
-            {/* <Route path="AWS" element={<AWS />} /> */}
+            <Route path="/AWS" element={<AWS />} />
+            <Route path="/GCP" element={<GCP />} />
+            <Route path="/Azure" element={<Azure />} />
+            
 
             <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
