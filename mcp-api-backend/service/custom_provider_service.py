@@ -49,7 +49,7 @@ async def create_custom_provider_profile(
             db=db,
             username=current_user.username,
             team=current_user.team,
-            action=f"Create custom provider account {result.id}",
+            action=f"커스텀 프로바이더 생성 ({result.id})",
         )
 
         return {"result": f"Create custom provider account {custom_provider.team} {custom_provider.environment}"}
@@ -92,7 +92,7 @@ async def custom_provider_account_by_id(
         db=db,
         username=current_user.username,
         team=current_user.team,
-        action=f"Delete custom provider account {custom_provider_id} team",
+        action=f"커스텀 프로바이더 삭제. ({custom_provider_id})",
     )
     
     return result

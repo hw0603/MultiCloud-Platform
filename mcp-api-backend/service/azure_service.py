@@ -42,7 +42,7 @@ async def create_new_azure_profile(
             db=db,
             username=current_user.username,
             team=current_user.team,
-            action=f"Create Azure Account {azure.subscription_id}",
+            action=f"Azure Provider 생성. ({azure.subscription_id})",
         )
         return {"result": f"Create Azure account {azure.team} {azure.environment}"}
     
@@ -83,7 +83,7 @@ async def azure_account_by_id(
         db=db,
         username=current_user.username,
         team=current_user.team,
-        action=f"Delete Azure account {azure_account_id}",
+        action=f"Azure Provider 삭제. ({azure_account_id})",
     )
 
     return result

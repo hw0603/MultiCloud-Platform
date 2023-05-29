@@ -15,6 +15,7 @@ from entity import user_entity as schemas_users
 from src.shared.security.deps import get_current_user
 from repository import aws_repository as crud_aws
 from src.shared.security.vault import vault_encrypt, vault_decrypt
+from repository import activity_logs_repository as crud_activity
 
 
 @vault_encrypt
@@ -112,5 +113,13 @@ async def get_instance_state(
         grafana_url=GRAFANA_URL,
         grafana_creds=GRAFANA_CREDS
     )
+
+    crud_activity.create_activity_log(
+        db=syncdb,
+        username=current_user.username,
+        team=current_user.team,
+        action=f"Grafana 대시보드 생성. ({dashboard_data.get('dashboard_uid', '')})",
+    )
+
 
     return ApiResponse.with_data(ApiStatus.SUCCESS, "success", dashboard_data)

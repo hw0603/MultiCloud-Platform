@@ -49,7 +49,7 @@ async def new_gcloud_profile(
             db=db,
             username=current_user.username,
             team=current_user.team,
-            action=f"Create GCP account {result.id}",
+            action=f"GCP 프로바이더 등록. ({result.id})",
         )
         return {"result": f"Create GCP account {gcp.team} {gcp.environment}"}
     
@@ -86,7 +86,7 @@ async def gcloud_account_by_id(
         db=db,
         username=current_user.username,
         team=current_user.team,
-        action=f"Delete GCP account {gcloud_account_id} team",
+        action=f"GCP 프로바이더 삭제. ({gcloud_account_id})",
     )
     return result
 

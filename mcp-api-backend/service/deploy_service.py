@@ -6,6 +6,7 @@ from repository import deploy_repository as crud_deploys
 from repository import deploy_detail_repository as crud_deploy_details
 from repository import stack_repository as crud_stacks
 from db.connection import get_db
+from repository import activity_logs_repository as crud_activity
 # from src.shared.helpers.get_data import (
 #     check_cron_schedule,
 #     check_deploy_exist,
@@ -102,6 +103,14 @@ async def deploy_infra_from_list(
         username=current_user.username,
         team=team,
         action="List Apply"
+    )
+
+    # activity 로깅
+    crud_activity.create_activity_log(
+        db=db,
+        username=current_user.username,
+        team=current_user.team,
+        action=f"인프라 배포 요청 ({deploy.deploy_name})",
     )
     
     return {
@@ -216,5 +225,12 @@ async def get_deploy_logs(
         dag_id="mcp_deploy_dag",
         dag_run_id=run_id,
         task_id=task_id
+    )
+
+    crud_activity.create_activity_log(
+        db=db,
+        username=current_user.username,
+        team=current_user.team,
+        action=f"배포 Task 로그 조회 ({run_id}:{task_id})",
     )
     return log_result
