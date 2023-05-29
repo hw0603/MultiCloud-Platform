@@ -112,6 +112,7 @@ def get_team_aws_profile(db: Session, team: str, environment: str):
                 .first()
             )
         result = []
+        team = [team]
         for i in team:
             result.extend(
                 db.query(models.Aws_provider)
