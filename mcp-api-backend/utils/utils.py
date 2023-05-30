@@ -54,17 +54,19 @@ def sync_git(
 def copy_template(
     stack_name: str,
     stack_type: str,
+    csp_type: str,
     environment: str,
     team: str,
     name: str,
 ):
     try:
         pipeline_copy_result = pipeline_copy_template.s(
+            name=name,
             stack_name=stack_name,
             stack_type=stack_type,
+            csp_type=csp_type,
             environment=environment,
             team=team,
-            name=name,
         ).apply_async(queue="team")
         task_id = pipeline_copy_result.task_id
         get_data = pipeline_copy_result.get()

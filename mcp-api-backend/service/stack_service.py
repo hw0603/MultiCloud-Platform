@@ -47,6 +47,7 @@ async def create_new_stack(
         task = copy_template(
             stack_name=stack.stack_name,
             stack_type=stack.stack_type,
+            csp_type=stack.csp_type,
             environment=environment,
             team=team,
             name=name,
