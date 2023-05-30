@@ -406,6 +406,23 @@ services:
       - api-backend
     volumes:
       - ${REMOTE_STATE_DIR:-../mcp-remote-state}:/app:ro  # Read-only
+  
+  # Dashboard
+  dashboard:
+    build:
+      context: ${DASHBOARD_DIR:-../mcp-dashboard}
+      dockerfile: Dockerfile
+    image: mcp-dashboard
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    environment:
+      IN_CONTAINER: True
+    depends_on:
+      - api-backend
+    volumes:
+      - /app/node_modules  # Read-Write 가능하도록 별도의 볼륨 마운트
+      - ${DASHBOARD_DIR:-../mcp-dashboard}:/app:ro  # Read-only
 
 
 
