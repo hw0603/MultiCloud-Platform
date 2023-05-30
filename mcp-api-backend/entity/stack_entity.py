@@ -6,7 +6,8 @@ import datetime
 
 class StackBase(BaseModel):
     stack_name: constr(strip_whitespace=True)
-    stack_type: Optional[constr(strip_whitespace=True)]
+    stack_type: constr(strip_whitespace=True)
+    csp_type: constr(strip_whitespace=True)  # aws, azure, gcp
     description: constr(strip_whitespace=True)
     team_access: List[str] = ["*"]
     tf_version: constr(strip_whitespace=True) = "1.3.2"

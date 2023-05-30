@@ -410,12 +410,18 @@ def pipeline_copy_template(
     name: str,
     stack_name: str,
     stack_type: str,
+    csp_type: str,
     environment: str,
     team: str,
 ):
     try:
         copy_result = ProviderRequirements.artifact_copy(
-            name=name, stack_name=stack_name, stack_type=stack_type, environment=environment, team=team
+            name=name,
+            stack_name=stack_name,
+            stack_type=stack_type,
+            csp_type=csp_type,
+            environment=environment,
+            team=team
         )
         if copy_result["rc"] != 0:
             raise Exception(copy_result.get("stdout"))
@@ -427,6 +433,7 @@ def pipeline_copy_template(
             environment=environment,
             stack_name=stack_name,
             stack_type=stack_type,
+            csp_type=csp_type,
             team=team,
             name=name,
         )

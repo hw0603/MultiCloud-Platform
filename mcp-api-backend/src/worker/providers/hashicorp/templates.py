@@ -10,6 +10,7 @@ class StructBase:
     name: str
     stack_name: str
     stack_type: str
+    csp_type: str
     environment: str
     team: str
 
@@ -44,11 +45,11 @@ class Backend(StructBase):
         try:
             tm = Template(data)
             provider_backend = tm.render(
-                deploy_state=f"{self.stack_name}-{self.team}-{self.environment}-{self.name}"
+                deploy_state=f"{self.csp_type}_{self.stack_name}-{self.team}-{self.environment}-{self.name}"
             )
-            file_path = f"/tmp/{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.stack_name}-{self.name}-{self.environment}.tf"
+            file_path = f"/tmp/{self.csp_type}_{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.csp_type}_{self.stack_name}-{self.name}-{self.environment}.tf"
             if self.project_path:
-                file_path = f"/tmp/{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.project_path}/{self.stack_name}-{self.name}-{self.environment}.tf"
+                file_path = f"/tmp/{self.csp_type}_{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.project_path}/{self.csp_type}_{self.stack_name}-{self.name}-{self.environment}.tf"
             with open(file_path, "w") as tf_state:
                 tf_state.write(provider_backend)
             return {"command": "tfserver", "rc": 0, "stdout": data}
@@ -63,9 +64,9 @@ class Tfvars(StructBase):
 
     def save(self) -> dict:
         try:
-            file_path = f"/tmp/{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.stack_name}.tfvars.json"
+            file_path = f"/tmp/{self.csp_type}_{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.csp_type}_{self.stack_name}.tfvars.json"
             if self.project_path:
-                file_path = f"/tmp/{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.project_path}/{self.stack_name}.tfvars.json"
+                file_path = f"/tmp/{self.csp_type}_{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.project_path}/{self.csp_type}_{self.stack_name}.tfvars.json"
             with open(file_path, "w") as tfvars_json:
                 json.dump(self.kwargs, tfvars_json)
             return {"command": "tfvars", "rc": 0, "stdout": self.kwargs}
@@ -82,8 +83,8 @@ class GetVars(StructBase):
 
     def __set_path(self):
         if not self.project_path:
-            return f"/tmp/{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.stack_type}/{self.stack_type}_variable.tf"
-        return f"/tmp/{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.project_path}/variable.tf"
+            return f"/tmp/{self.csp_type}_{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.stack_type}/{self.stack_type}_variable.tf"
+        return f"/tmp/{self.csp_type}_{self.stack_name}/{self.environment}/{self.team}/{self.name}/{self.project_path}/variable.tf"
 
     def get_vars_json(self) -> dict:
         try:

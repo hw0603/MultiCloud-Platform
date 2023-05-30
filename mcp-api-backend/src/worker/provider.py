@@ -36,12 +36,13 @@ class ProviderRequirements:
         name: str,
         stack_name: str,
         stack_type: str,
+        csp_type: str,
         environment: str,
         team: str,
         artifact=ArtifactFromTemplate,
     ) -> dict:
         config_artifact = artifact(
-            name, stack_name, environment, team, stack_type
+            name, stack_name, environment, team, stack_type, csp_type
         )
         return config_artifact.get()
 
@@ -78,12 +79,13 @@ class ProviderGetVars:
         name: str,
         stack_name: str,
         stack_type: str,
+        csp_type: str,
         environment: str,
         team: str,
         project_path: str="",
         vars=GetVars,
     ) -> dict:
-        config_vars = vars(name, stack_name, stack_type, environment, team, project_path)
+        config_vars = vars(name, stack_name, stack_type, csp_type, environment, team, project_path)
         return config_vars.get_vars_json()
 
 

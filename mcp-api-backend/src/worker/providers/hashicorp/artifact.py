@@ -74,11 +74,12 @@ class ArtifactFromGit(StructBase):
 @dataclass
 class ArtifactFromTemplate(StructBase):
     stack_type: str
+    csp_type: str
 
     def get(self):
 
         try:
-            directory = f"/tmp/{self.stack_name}/{self.environment}/{self.team}/"
+            directory = f"/tmp/{self.csp_type}_{self.stack_name}/{self.environment}/{self.team}/"
             os.makedirs(directory, exist_ok=True)
             logger.info(f"Directory {directory} created successfully")
         except OSError:
