@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query, Depends, HTTPException
 
 from repository import activity_logs_repository as crud_activity
 # from src.shared.helpers.get_data import check_team_stack, check_providers
-from utils.utils import sync_git, copy_template
+from utils.utils import sync_git, copy_template, check_supported_csp, check_team_stack
 from src.shared.security import deps
 from entity import stack_entity as schemas_stacks
 from entity import user_entity as schemas_users
@@ -29,8 +29,9 @@ async def create_new_stack(
     team = "team"
     branch = stack.branch
 
-    # TODO: 프로바이더 prefix로 validation 필요
-    # check_providers(stack_name=stack.stack_name)
+    # 지원하는 CSP인지 확인
+    if not (check_supported_csp(stack.csp_type)):
+        raise HTTPException(status_code=409, detail=f"{stack.csp_type} 는 지원하지 않는 CSP입니다.")
 
     # 스택이 존재하는지 확인
     db_stack = crud_stacks.get_stack_by_name(db, stack_name=stack.stack_name)
@@ -38,8 +39,8 @@ async def create_new_stack(
         raise HTTPException(status_code=409, detail="해당 스택 이름이 이미 존재합니다.")
     
 
-    # TODO: 현재 사용자가 스택을 생성할 권한이 있는지 확인
-    # check_team_stack(db, current_user, current_user.team, stack.team_access)
+    # 현재 사용자가 스택을 생성할 권한이 있는지 확인
+    check_team_stack(db, current_user, current_user.team, stack.team_access)
     
     # stack_type이 지정되었다면 git에서 clone하지 않고 내부 템플릿을 복사해서 사용
     if (stack.stack_type):
