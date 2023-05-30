@@ -7,6 +7,11 @@ import "../../components/Modal.css";
 import { MdOutlineCancel } from "react-icons/md";
 import { BsFillTrashFill } from "react-icons/bs"
 
+
+const refresh = () => {
+    window.location.replace("/AWS");
+}
+
 const Modal = () => {
     const { setIsModalOpen, mainColor, base_url } = useStateContext();
     const closeModal = () => {
@@ -39,7 +44,10 @@ const Modal = () => {
                 }
             })
                 .then((response) => {
-                    console.log(response)
+                    console.log(response);
+                    closeModal();
+                    alert("프로바이더가 생성되었습니다.");
+                    refresh();
                 })
                 .catch((error) => {
                     console.log(error)
@@ -98,7 +106,11 @@ const Modal = () => {
                         bgColor={mainColor}
                         text="새 프로바이더 생성"
                         borderRadius="10px"
-                        onClickFunc={createProvider}
+                        onClickFunc={() => {
+                            if (window.confirm("프로바이더를 생성하시겠습니까?")) {
+                                createProvider();
+                            }
+                        }}
                     />
                 </div>
             </div>
