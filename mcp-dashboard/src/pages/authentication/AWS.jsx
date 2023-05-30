@@ -1,10 +1,11 @@
 import React, { useLayoutEffect, useMemo, useState, useEffect } from "react";
 import { useStateContext } from "../../contexts/ContextProvider";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import { Table, Button } from "../../components";
 import "../../components/Modal.css";
 import { MdOutlineCancel } from "react-icons/md";
+import { BsFillTrashFill } from "react-icons/bs"
 
 const Modal = () => {
     const { setIsModalOpen, mainColor, base_url } = useStateContext();
@@ -107,9 +108,40 @@ const Modal = () => {
 
 const AWS = () => {
     const { mainColor, base_url, stacks, setStacks, isAuthorized, isModalOpen, setIsModalOpen } = useStateContext();
-    const navigate = useNavigate();
     const [providers, setProviders] = useState([]);
-    // const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const getProviderList = () => {
+        axios({
+            method: 'GET',
+            url: `${base_url}/api/v1/aws`,
+            headers: {
+                "Authorization": localStorage.getItem("accessToken")
+            },
+        })
+            .then((response) => {
+                setProviders(response.data);
+            })
+            .catch((error) => {
+                console.log("error", error);
+            })
+    }
+
+    const deleteProvider = (id) => {
+        axios({
+            method: "DELETE",
+            url: `${base_url}/api/v1/aws/${id}`,
+            headers: {
+                "Authorization": localStorage.getItem("accessToken")
+            },
+        })
+            .then(() => {
+                alert("선택한 프로바이더를 삭제하였습니다.")
+                getProviderList();
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
 
     const columns = useMemo(
         () => [
@@ -132,25 +164,29 @@ const AWS = () => {
             {
                 accessor: "created_at",
                 Header: "생성 날짜"
-            }
+            },
+            {
+                accessor: "delete",
+                Header: "삭제",
+                Cell: tableProps => (
+                    <div className="flex items-center justify-center">
+                        <button onClick={() => {
+                            if (window.confirm("선택한 프로바이더를 삭제하시겠습니까?")) {
+                                deleteProvider(tableProps.data[tableProps.row.index].id)
+                            }
+                        }} style={{ color: "black", }}>
+                            <BsFillTrashFill />
+                        </button>
+                    </div>
+                ),
+                minWidth: 140,
+                width: 200,
+            },
         ], []
     );
 
     useLayoutEffect(() => {
-        axios({
-            method: 'GET',
-            url: `${base_url}/api/v1/aws`,
-            headers: {
-                "Authorization": localStorage.getItem("accessToken")
-            },
-        })
-            .then((response) => {
-                console.log(response.data);
-                setProviders(response.data);
-            })
-            .catch((error) => {
-                console.log("error", error);
-            })
+        getProviderList();
     }, []);
 
     return (
