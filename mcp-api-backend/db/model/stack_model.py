@@ -10,6 +10,7 @@ class Stack(Base):
     stack_id = Column(Integer, primary_key=True, index=True)
     stack_name = Column(String(50), unique=True)
     stack_type = Column(String(50))
+    csp_type = Column(String(20))
     description = Column(Text())
     var_list = Column(JSON)
     var_json = Column(JSON)
