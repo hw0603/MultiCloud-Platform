@@ -26,6 +26,7 @@ from repository import task_repository as crud_tasks
 from entity import user_entity as schemas_users
 from repository import user_repository as crud_users
 from service import airflow_service
+from utils.utils import check_team_user
 
 
 async def deploy_infra_from_list(
@@ -38,13 +39,12 @@ async def deploy_infra_from_list(
     response.status_code = status.HTTP_202_ACCEPTED
     # 현재 사용자의 팀 가져오기
     team = deploy.team
-    # Get team from current user
     if not crud_users.is_master(db, current_user):
         current_team = current_user.team
-        # if not check_team_user(current_team, [deploy.team]):
-        #     raise HTTPException(
-        #         status_code=403, detail=f"Not enough permissions in {team}"
-        #     )
+        if not check_team_user(current_team, [deploy.team]):
+            raise HTTPException(
+                status_code=403, detail=f"팀 {team} 에 충분한 권한이 없습니다."
+            )
     
 
     # 팀과 이름으로 타겟 스택 구함

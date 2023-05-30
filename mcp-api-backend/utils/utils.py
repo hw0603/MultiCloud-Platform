@@ -102,3 +102,7 @@ def check_team_stack(
                 status_code=403,
                 detail=f"요청한 팀 중 권한이 없는 팀이 있습니다. {stack_team_access}",
             )
+
+
+def check_team_user(team_owner: list, team_add: list) -> bool:
+    return all(item in team_owner for item in team_add)
