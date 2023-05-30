@@ -7,22 +7,13 @@ from repository import deploy_detail_repository as crud_deploy_details
 from repository import stack_repository as crud_stacks
 from db.connection import get_db
 from repository import activity_logs_repository as crud_activity
-# from src.shared.helpers.get_data import (
-#     check_cron_schedule,
-#     check_deploy_exist,
-#     check_deploy_task_pending_state,
-#     check_prefix,
-#     check_team_user,
-#     stack,
-# )
-# from src.shared.helpers.push_task import (
-#     async_deploy,
-#     async_schedule_add,
-#     async_schedule_delete,
-# )
 from src.shared.security import deps
 
 from repository import task_repository as crud_tasks
+from repository import aws_repository as crud_aws
+from repository import gcp_repository as crud_gcp
+from repository import azure_repository as crud_azure
+from repository import custom_provider_repository as crud_custom_provider
 from entity import user_entity as schemas_users
 from repository import user_repository as crud_users
 from service import airflow_service
@@ -37,8 +28,8 @@ async def deploy_infra_from_list(
 ):
 
     response.status_code = status.HTTP_202_ACCEPTED
-    # 현재 사용자의 팀 가져오기
     team = deploy.team
+    # 현재 사용자의 팀과 요청한 팀을 비교하여 권한이 있는지 확인
     if not crud_users.is_master(db, current_user):
         current_team = current_user.team
         if not check_team_user(current_team, [deploy.team]):
@@ -47,22 +38,67 @@ async def deploy_infra_from_list(
             )
     
 
-    # 팀과 이름으로 타겟 스택 구함
+    # 팀과 이름으로 타겟 스택을 구하고, 해당 스택의 CSP 타입을 보고 적절한 Provider를 구함
+    infra_data = {}
     target_stacks = []
     for deploy_detail in deploy.deploy_detail:
         stack_name = deploy_detail.stack_name
+        variables = deploy_detail.variables
         stack = crud_stacks.get_stack_by_name_and_team(db, stack_name, team)
         if (stack):
+            provider = None
+            if (stack.csp_type == "aws"):
+                res = crud_aws.get_team_aws_profile(db, team, deploy.environment)
+                provider = {
+                    "access_key_id": res.access_key_id,
+                    "secret_access_key": res.secret_access_key,
+                }
+            elif (stack.csp_type == "gcp"):
+                res = crud_gcp.get_team_gcloud_profile(db, team, deploy.environment)
+                provider = {
+                    "credentials": res.credentials,
+                }
+            elif (stack.csp_type == "azure"):
+                res = crud_azure.get_team_azure_profile(db, team, deploy.environment)
+                provider = {
+                    "client_id": res.client_id,
+                    "client_secret": res.client_secret,
+                    "tenant_id": res.tenant_id,
+                    "subscription_id": res.subscription_id,
+                }
+            elif (stack.csp_type == "custom"):
+                res = crud_custom_provider.get_team_custom_provider_profile(db, team, deploy.environment)
+                provider = {
+                    "credentials": res.credentials,
+                }
+            
+            if not (provider):
+                raise HTTPException(
+                    status_code=404, detail=f"Provider 정보를 찾을 수 없습니다."
+                )
+
+            infra_data[stack_name] = {
+                "csp_type": stack.csp_type,
+                "stack_type": stack.stack_type,
+                "variables": variables,
+                "tfvar_file": deploy_detail.tfvar_file,
+                "provider": provider
+            }
             target_stacks.append(stack)
+        else:
+            raise HTTPException(
+                status_code=404, detail=f"스택 {stack_name} 을 찾을 수 없습니다."
+            )
     
-    # 타켓 스택이 제대로 구해졌는지 확인
-    if not (len(target_stacks) == len(deploy.deploy_detail)):
-        raise HTTPException(
-            status_code=404, detail=f"찾을 수 없는 스택이 포함되어 있습니다."
-        )
-    
-    # TODO: Airflow 로 배포 요청. 실제로는 conf에 deploy_detail 정보와 Provider 정보가 제공되어야 함
-    airflow_conf = {}
+    # 배포할 인프라의 정보를 Airflow로 전달하며 배포 요청
+    airflow_conf = {
+        "deploy_name": deploy.deploy_name,
+        "team": deploy.team,
+        "environment": deploy.environment,
+        "start_time": deploy.start_time,
+        "destroy_time": deploy.destroy_time,
+        "infra_data": infra_data,
+    }
     trigger_result = airflow_service.trigger_dag(
         dag_id="mcp_deploy_dag",
         conf=airflow_conf
