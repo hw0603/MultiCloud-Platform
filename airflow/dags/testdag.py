@@ -11,7 +11,7 @@ args = {
 }
 
 dag = DAG(
-    dag_id='mcp_deploy_dag',
+    dag_id='test',
     default_args=args,
 )
 
@@ -19,6 +19,7 @@ def calc(**context):
     # context는 실행 시 넘겨준 파라미터를 받는다.
 
     print("calc 함수 호출됨")
+    print("context:", context)
 
     # context에는 다음과 같은 정보가 들어있다.
     # - dag: DAG 객체
@@ -72,7 +73,7 @@ t2 = PythonOperator(
     task_id='task_2',
     provide_context=True,
     python_callable=calc,
-    # op_kwargs={'a': 1, 'b': 2},  # 함수의 인자로 넣을 값들(이건 코드상에 고정?)
+    op_kwargs={'a': 1, 'b': 2},  # 함수의 인자로 넣을 값들(이건 코드상에 고정?)
     dag=dag
 )
 t3 = PythonOperator(
