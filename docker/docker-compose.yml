@@ -136,6 +136,8 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    volumes:
+      - mcp-volume:/mcp_infra
 
   airflow-scheduler:
     <<: *airflow-common
@@ -151,6 +153,8 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    volumes:
+      - mcp-volume:/mcp_infra
 
   airflow-worker:
     <<: *airflow-common
@@ -173,6 +177,8 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    volumes:
+      - mcp-volume:/mcp_infra
 
   airflow-triggerer:
     <<: *airflow-common
@@ -362,6 +368,7 @@ services:
       - grafana
     volumes:
       - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
+      - mcp-volume:/tmp
   
   # API Server Celery Worker
   worker:
@@ -384,6 +391,7 @@ services:
     restart: on-failure
     volumes:
       - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
+      - mcp-volume:/tmp # Read-Write 가능하도록 별도의 볼륨 마운트
   
   # Remote State
   remote-state:
@@ -429,3 +437,4 @@ services:
 volumes:
   postgres-db-volume:
   grafana-volume:
+  mcp-volume:
