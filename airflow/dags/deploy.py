@@ -11,6 +11,17 @@ logger = logging.getLogger(__name__)
 import json
 from dda_python_terraform import *
 
+"""
+TODO:
+Stack 들의 연산은 트랜잭션 처리되어야 함.
+XCOM 같은 기법을 사용하여 이전 스택이 성공적으로 생성되었는지 확인 후 다음 스택을 생성해야 함.
+
+인프라 별로 매 번 params를 파싱하기보다 파싱하는 Task를 우선 수행하고, Xcom에서 데이터 가져오는 것이 효율적일 것 같음
+
+작업 별로 로깅 자세히 하기, terraform output을 로깅에 포함시키기
+
+Task Group과 Skip를 적절히 사용하고, Dynamic Workflow를 구현하여 작업을 효율적으로 수행할 수 있도록 하기
+"""
 
 t = Terraform()
 
@@ -56,13 +67,13 @@ def terraform_download(**context):
             st = os.stat(f"/mcp_infra/{version}/terraform")
             os.chmod(f"/mcp_infra/{version}/terraform", st.st_mode | stat.S_IEXEC)
         return {
-            "command": "binaryDownload",
+            "command": "terraform_download",
             "rc": 0,
-            "stdout": "Download Binary file",
+            "stdout": "테라폼 바이너리 다운로드 성공",
         }
 
     except Exception as err:
-        return {"command": "binaryDownload", "rc": 1, "stdout": err}
+        return {"command": "terraform_download", "rc": 1, "stdout": str(err)}
 
 
 # /mcp_infra 에 있는 스택(env=default, name=default)을 Deploy 이름과 환경에 맞는 경로로 복사
@@ -116,6 +127,9 @@ def copy_template(stack_type: str, **context):
         logger.info(f"템플릿 복사 실패: 이름({deploy_name}), 환경({environment})")
         raise err
 
+
+def plan(stack_type: str, **context):
+    t = 
 
 def test_deploy(**context):
     t = Terraform(working_dir="/mcp_infra/test", terraform_bin_path="/mcp_infra/1.3.2/terraform")
@@ -204,6 +218,13 @@ copy_vpc = PythonOperator(
     task_id='copy_vpc',
     provide_context=True,
     python_callable=copy_template,
+    op_kwargs={'stack_type': 'vpc'},
+    dag=dag
+)
+plan_vpc = PythonOperator(
+    task_id='plan_vpc',
+    provide_context=True,
+    python_callable=plan,
     op_kwargs={'stack_type': 'vpc'},
     dag=dag
 )
