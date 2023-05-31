@@ -6,8 +6,7 @@ import { AiTwotoneCloud } from "react-icons/ai";
 import axios from "axios";
 
 const Login = () => {
-    const { isAuthorized, setIsAuthorized, mainColor, base_url } = useStateContext();
-    const [username, setUsername] = useState("");
+    const { isAuthorized, setIsAuthorized, mainColor, base_url, username, setUsername} = useStateContext();
     const [password, setPassword] = useState("");
 
     const handleSubmit = (e) => {

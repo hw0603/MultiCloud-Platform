@@ -7,13 +7,13 @@ import { Table } from "../components";
 // import { BsFillTrashFill } from "react-icons/bs"
 
 const Log = () => {
-    const { mainColor, base_url, stacks, setStacks, isAuthorized, isModalOpen, setIsModalOpen } = useStateContext();
+    const { base_url, username } = useStateContext();
     const [logs, setLogs] = useState([]);
 
     const getLog = () => {
         axios({
             method: 'GET',
-            url: `${base_url}/api/v1/activity_log/id/admin`,
+            url: `${base_url}/api/v1/activity_log/id/${username}`,
             headers: {
                 "Authorization": localStorage.getItem("accessToken")
             },
