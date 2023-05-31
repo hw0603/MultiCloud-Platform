@@ -10,6 +10,7 @@ import shutil
 logger = logging.getLogger(__name__)
 import json
 from dda_python_terraform import *
+from jinja2 import Template
 
 """
 TODO:
@@ -43,6 +44,8 @@ def terraform_download(**context):
 
     context_data = context['params']
     version = context_data.get('tf_version', '1.3.2')
+    # XCOM에 테라폼 버전 push
+    context['ti'].xcom_push(key='tf_version', value=version)
 
     # 플랫폼에 맞게 다운로드
     arch = 'arm64' if platform.machine() in {'arm64', 'aarch64'} else 'amd64'
@@ -94,6 +97,9 @@ def copy_template(stack_type: str, **context):
             break
     logger.info(f"타겟 스택을 찾았습니다. ({target_stack_name})")
 
+    # XCOM에 타겟 스택의 변수 push
+    context['ti'].xcom_push(key="stack_vars", value=target_stack_data.get("variables"))
+
 
     try:
         source_dir = f"/mcp_infra/{target_stack_data.get('csp_type')}_{target_stack_name}/default/{team}/default/{stack_type}"
@@ -117,6 +123,9 @@ def copy_template(stack_type: str, **context):
                 logger.info(f"파일 복사: {file} (실패)")
 
         logger.info(f"템플릿 복사 성공: 이름({deploy_name}), 환경({environment})")
+
+        # XCOM에 dest_dir 푸시
+        context['ti'].xcom_push(key='working_dir', value=dest_dir)
         return {
             "command": "copy_template",
             "rc": 0,
@@ -128,33 +137,95 @@ def copy_template(stack_type: str, **context):
         raise err
 
 
-def plan(stack_type: str, **context):
-    t = 
+def set_storage(stack_type: str, **context):
+    working_dir = context['ti'].xcom_pull(key='working_dir', task_ids=f'copy_{stack_type}')
 
-def test_deploy(**context):
-    t = Terraform(working_dir="/mcp_infra/test", terraform_bin_path="/mcp_infra/1.3.2/terraform")
-    var_dict = {
-        "aws_vpc_cidr": "10.0.0.0/16",
-        "aws_vpc_name": "wow64",
-        "aws_dns_support_flag": True,
-        "aws_internet_gateway_name": "aws igw name",
-        "aws_region": "ap-northeast-2"
+    storage_data = '''
+    terraform {
+        backend "http" {
+            address = "http://remote-state:8080/terraform_state/{{deploy_state}}"
+            lock_address = "http://remote-state:8080/terraform_lock/{{deploy_state}}"
+            lock_method = "PUT"
+            unlock_address = "http://remote-state:8080/terraform_lock/{{deploy_state}}"
+            unlock_method = "DELETE"
+        }
     }
+    '''
+    tm = Template(storage_data)
+    provider_backend = tm.render(
+        deploy_state=f"{working_dir.replace('/', '-').replace(' ', '_')}"  # Deploy의 UID
+    )
+
+    logger.info(provider_backend)
+
+    with open(f"{working_dir}/remote-state.tf", "w+") as f:
+        f.write(provider_backend)
+    logger.info("원격 저장소 설정 완료")
+
+    cred_data = '''
+    variable "aws_access_key" {
+        type = string
+        default = "{{aws_access_key}}"
+    }
+    variable "aws_secret_key" {
+        type = string
+        default = "{{aws_secret_key}}"
+    }
+    '''
+    tm = Template(cred_data)
+    creds = tm.render(
+        aws_access_key='',  # TODO: Key 연결
+        aws_secret_key=''  # TODO: Secret 연결
+    )
+    logger.info(creds)
+
+    with open(f"{working_dir}/credential.tf", "w+") as f:
+        f.write(creds)
+    logger.info("인증 정보 설정 완료")
 
 
-    t.init()
+def plan(stack_type: str, **context):
+    # XCOM에서 사용할 정보 pull
+    working_dir = context['ti'].xcom_pull(key='working_dir', task_ids=f'copy_{stack_type}')
+    tf_version = context["ti"].xcom_pull(key='tf_version', task_ids='terraform_download')
+    var_dict = context['ti'].xcom_pull(key='stack_vars', task_ids=f'copy_{stack_type}')
 
-    logger.info("Terraform init 완료")
+    # 테라폼 인스턴스 할당
+    t = Terraform(working_dir=working_dir, terraform_bin_path=f"/mcp_infra/{tf_version}/terraform")
+    logger.info(f"테라폼 working_dir={working_dir}")
+
+    # Init
     try:
-        t.plan(capture_output=True, out="plan.out", var=var_dict)
+        t.init(capture_output=True)  # TODO: 출력 캡처
     except TerraformCommandError as e:
-        print(e)
+        logger.warn(e)
+        raise e
+    logger.info("Terraform Init 성공")
 
-    t.apply("plan.out", capture_output=True)
-    print("-"*80)
+    # Plan
+    try:
+        t.plan(capture_output=True, out="plan.out", var=var_dict)  # TODO: 출력 캡처
+    except TerraformCommandError as e:
+        logger.warn(e)
+    logger.info(f"Terraform Plan 성공")
 
+
+def apply(stack_type: str, **context):
+    # XCOM에서 사용할 정보 pull
+    working_dir = context['ti'].xcom_pull(key='working_dir', task_ids=f'copy_{stack_type}')
+    tf_version = context["ti"].xcom_pull(key='tf_version', task_ids='terraform_download')
+    t = Terraform(working_dir=working_dir, terraform_bin_path=f"/mcp_infra/{tf_version}/terraform")
+
+    # Apply
+    try:
+        t.apply("plan.out", capture_output=True)
+    except TerraformCommandError as e:
+        logger.warn(e)
+    logger.info("Terraform Apply 완료")
+
+    logger.info("10초 대기...")
+    time.sleep(10)
     t.destroy(capture_output=True, force=None)
-
 
 def calc(**context):
     # context는 실행 시 넘겨준 파라미터를 받는다.
@@ -221,10 +292,24 @@ copy_vpc = PythonOperator(
     op_kwargs={'stack_type': 'vpc'},
     dag=dag
 )
+storage_vpc = PythonOperator(
+    task_id='storage_vpc',
+    provide_context=True,
+    python_callable=set_storage,
+    op_kwargs={'stack_type': 'vpc'},
+    dag=dag
+)
 plan_vpc = PythonOperator(
     task_id='plan_vpc',
     provide_context=True,
     python_callable=plan,
+    op_kwargs={'stack_type': 'vpc'},
+    dag=dag
+)
+apply_vpc = PythonOperator(
+    task_id='apply_vpc',
+    provide_context=True,
+    python_callable=apply,
     op_kwargs={'stack_type': 'vpc'},
     dag=dag
 )
@@ -258,7 +343,7 @@ plan_vpc = PythonOperator(
 # )
 
 
-download >> copy_vpc
+download >> copy_vpc >> storage_vpc >> plan_vpc >> apply_vpc
 
 # download >> t2 >> t3 >> t4 >> t5
 # download >> t6
