@@ -13,7 +13,7 @@ const Log = () => {
     const getLog = () => {
         axios({
             method: 'GET',
-            url: `${base_url}/api/v1/activity_log/id/${username}`,
+            url: `${base_url}/api/v1/activity_log/id/${localStorage.getItem("username")}`,
             headers: {
                 "Authorization": localStorage.getItem("accessToken")
             },
@@ -61,13 +61,9 @@ const Log = () => {
                 <div className="flex justify-between p-3 m-3 border-b-2">
                     <div className="flex justfiy-center items-center text-2xl">활동 로그 </div>
                 </div>
-
                 
                 <Table columns={columns} data={logs} />
-
             </div>
-
-            {/* {isModalOpen && <Modal />} */}
         </>
     );
 };
