@@ -12,6 +12,7 @@ import json
 from dda_python_terraform import *
 from jinja2 import Template
 from airflow.utils.task_group import TaskGroup
+from airflow.operators.python import BranchPythonOperator
 
 """
 TODO:
@@ -79,6 +80,23 @@ with DAG(
 
         except Exception as err:
             return {"command": "terraform_download", "rc": 1, "stdout": str(err)}
+
+
+    def check_available(current_infra: str, **context):
+        context_data = context['params']
+        infra_data = context_data.get('infra_data')
+
+        logger.info(f"현재 인프라: {current_infra}")
+        logger.info(f"인프라 데이터: {infra_data}")
+
+        for infra in infra_data:
+            assert type(infra_data[infra]) == dict
+            target_stack_data = infra_data.get(infra)
+
+            if (target_stack_data.get("stack_type") == current_infra):
+                return f"{current_infra}.copy"
+        return f"{current_infra}.skip"
+        
 
 
     # /mcp_infra 에 있는 스택(env=default, name=default)을 Deploy 이름과 환경에 맞는 경로로 복사
@@ -203,7 +221,7 @@ with DAG(
 
         # Init
         try:
-            return_code, stdout, stderr = t.init(capture_output=True)  # TODO: 출력 캡처
+            return_code, stdout, stderr = t.init(capture_output=True)
         except TerraformCommandError as e:
             logger.warn(e)
             raise e
@@ -214,7 +232,7 @@ with DAG(
 
         # Plan
         try:
-            return_code, stdout, stderr = t.plan(capture_output=True, out="plan.out", var=var_dict)  # TODO: 출력 캡처
+            return_code, stdout, stderr = t.plan(capture_output=True, out="plan.out", var=var_dict)
         except TerraformCommandError as e:
             logger.warn(e)
         logger.info("-"*80)
@@ -239,9 +257,9 @@ with DAG(
         logger.info(f"stdout: {stdout}")
         logger.info("-"*80)
 
-        logger.info("10초 대기...")
-        time.sleep(10)
-        return_code, stdout, stderr = t.destroy(capture_output=True, force=None)
+        # logger.info("10초 대기...")
+        # time.sleep(10)
+        # return_code, stdout, stderr = t.destroy(capture_output=True, force=None)
         logger.info("-"*80)
         logger.info("Terraform Destroy 완료")
         logger.info(f"stdout: {stdout}")
@@ -257,41 +275,55 @@ with DAG(
 
     groups = {}
 
-    for g_id in ["vpc", "alb"]:
+    for g_id in ["vpc", "alb", "bastion"]:
         with TaskGroup(group_id=g_id) as tg:
+            check_task = BranchPythonOperator(
+                task_id='check',
+                provide_context=True,
+                python_callable=check_available,
+                op_kwargs={'current_infra': g_id},
+                trigger_rule='one_success',
+                dag=dag
+            )
             copy_task = PythonOperator(
                 task_id='copy',
                 provide_context=True,
                 python_callable=copy_template,
-                op_kwargs={'stack_type': 'vpc'},
+                op_kwargs={'stack_type': g_id},
                 dag=dag
             )
             storage_task = PythonOperator(
                 task_id='storage_and_creds',
                 provide_context=True,
                 python_callable=set_storage_and_creds,
-                op_kwargs={'stack_type': 'vpc'},
+                op_kwargs={'stack_type': g_id},
                 dag=dag
             )
             plan_task = PythonOperator(
                 task_id='plan',
                 provide_context=True,
                 python_callable=plan,
-                op_kwargs={'stack_type': 'vpc'},
+                op_kwargs={'stack_type': g_id},
                 dag=dag
             )
             apply_task = PythonOperator(
                 task_id='apply',
                 provide_context=True,
                 python_callable=apply,
-                op_kwargs={'stack_type': 'vpc'},
+                op_kwargs={'stack_type': g_id},
                 dag=dag
             )
+            skip_task = EmptyOperator(
+                task_id='skip',
+                dag=dag
+            )
+            check_task >> [copy_task, skip_task]
             copy_task >> storage_task >> plan_task >> apply_task
+            
             groups[g_id] = tg
 
-
-    download >> groups["vpc"] >> groups["alb"]
+    # TODO: Stack 간 의존성 설정
+    download >> groups["vpc"] >> groups["alb"] >> groups["bastion"]
 
 
 
