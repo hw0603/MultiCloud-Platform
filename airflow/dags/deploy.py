@@ -220,24 +220,25 @@ with DAG(
         logger.info(f"테라폼 working_dir={working_dir}")
 
         # Init
+        result = ""
         try:
-            return_code, stdout, stderr = t.init(capture_output=True)
+            result = t.init(capture_output=True)
         except TerraformCommandError as e:
             logger.warn(e)
             raise e
         logger.info("-"*80)
         logger.info("Terraform Init 성공")
-        logger.info(f"stdout: {stdout}")
+        logger.info(f"result: {result}")
         logger.info("-"*80)
 
         # Plan
         try:
-            return_code, stdout, stderr = t.plan(capture_output=True, out="plan.out", var=var_dict)
+            result = t.plan(capture_output=True, out="plan.out", var=var_dict)
         except TerraformCommandError as e:
             logger.warn(e)
         logger.info("-"*80)
         logger.info(f"Terraform Plan 성공")
-        logger.info(f"stdout: {stdout}")
+        logger.info(f"result: {result}")
         logger.info("-"*80)
 
 
@@ -248,22 +249,25 @@ with DAG(
         t = Terraform(working_dir=working_dir, terraform_bin_path=f"/mcp_infra/{tf_version}/terraform")
 
         # Apply
+        result = ""
         try:
-            return_code, stdout, stderr = t.apply("plan.out", capture_output=True)
+            result = t.apply("plan.out", capture_output=True)
         except TerraformCommandError as e:
             logger.warn(e)
         logger.info("-"*80)
         logger.info("Terraform Apply 완료")
-        logger.info(f"stdout: {stdout}")
+        logger.info(f"result: {result}")
         logger.info("-"*80)
 
         # logger.info("10초 대기...")
         # time.sleep(10)
         # return_code, stdout, stderr = t.destroy(capture_output=True, force=None)
-        logger.info("-"*80)
-        logger.info("Terraform Destroy 완료")
-        logger.info(f"stdout: {stdout}")
-        logger.info("-"*80)
+        # logger.info("-"*80)
+        # logger.info("Terraform Destroy 완료")
+        # logger.info(f"return_code: {return_code}")
+        # logger.info(f"stdout: {stdout}")
+        # logger.info(f"stderr: {stderr}")
+        # logger.info("-"*80)
 
     
     download = PythonOperator(
