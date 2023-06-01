@@ -139,7 +139,7 @@ def copy_template(stack_type: str, **context):
         raise err
 
 
-def set_storage(stack_type: str, **context):
+def set_storage_and_creds(stack_type: str, **context):
     working_dir = context['ti'].xcom_pull(key='working_dir', task_ids=f'copy_{stack_type}')
 
     storage_data = '''
@@ -262,7 +262,7 @@ copy_vpc = PythonOperator(
 storage_vpc = PythonOperator(
     task_id='storage_vpc',
     provide_context=True,
-    python_callable=set_storage,
+    python_callable=set_storage_and_creds,
     op_kwargs={'stack_type': 'vpc'},
     dag=dag
 )
