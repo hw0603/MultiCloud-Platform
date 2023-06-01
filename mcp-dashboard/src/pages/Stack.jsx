@@ -1,80 +1,132 @@
-import React, { useLayoutEffect } from "react";
-import Button from "../components/Button";
+import React, { useLayoutEffect, useMemo, useState } from "react";
+import { Button, Table } from "../components";
 import { useStateContext } from "../contexts/ContextProvider";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-
+import { BsFillTrashFill } from "react-icons/bs"
 
 const Stack = () => {
-    const { mainColor, base_url, stacks, setStacks } = useStateContext();
+    const { mainColor, base_url } = useStateContext();
     const navigate = useNavigate();
-    useLayoutEffect(() => {
-        console.log("useLayoutEffect");
-        axios.get(`${base_url}/api/v1/stacks`)
+    const [stacks, setStacks] = useState([]);
+
+    const getStackList = () => {
+        axios({
+            method: 'GET',
+            url: `${base_url}/api/v1/stacks`,
+            headers: {
+                "Authorization": localStorage.getItem("accessToken")
+            },
+        })
             .then((response) => {
+                console.log(response);
                 setStacks(response.data);
             })
             .catch((error) => {
-                console.log(error);
+                console.log("error", error);
             })
-            .finally(() => {
-                console.log("stacks", stacks);
+    }
+
+
+    const deleteProvider = (id) => {
+        axios({
+            method: "DELETE",
+            url: `${base_url}/api/v1/aws/${id}`,
+            headers: {
+                "Authorization": localStorage.getItem("accessToken")
+            },
+        })
+            .then(() => {
+                alert("선택한 프로바이더를 삭제하였습니다.")
+                getStackList();
             })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+    const columns = useMemo(
+        () => [
+            {
+                accessor: "stack_id",
+                Header: "ID",
+            },
+            {
+                accessor: "stack_name",
+                Header: "스택명"
+            },
+            {
+                accessor: "description",
+                Header: "설명"
+            },
+            {
+                accessor: "csp_type",
+                Header: "CSP 타입"
+            },
+            {
+                accessor: "stack_type",
+                Header: "스택 타입"
+            },
+            {
+                accessor: "created_at",
+                Header: "생성 날짜"
+            },
+            {
+                accessor: "delete",
+                Header: "삭제",
+                Cell: tableProps => (
+                    <div className="flex items-center justify-center">
+                        <button onClick={() => {
+                            if (window.confirm("선택한 스택을 삭제하시겠습니까?")) {
+                                deleteProvider(tableProps.data[tableProps.row.index].id)
+                            }
+                        }} style={{ color: "black", }}>
+                            <BsFillTrashFill />
+                        </button>
+                    </div>
+                ),
+                minWidth: 140,
+                width: 200,
+            },
+        ], []
+    );
+
+    useLayoutEffect(() => {
+        getStackList();
     }, []);
 
     return (
         <>
-            <div className="p-10">
+            <div className="px-10 py-5">
                 <div className="flex justify-between p-3 m-3 border-b-2">
-                    <div className="flex justfiy-center items-center text-2xl">관리 중인 스택</div>
-                    <Button
-                        color="white"
-                        bgColor={mainColor}
-                        text="새 스택 생성"
-                        borderRadius="10px"
-                        onClickFunc = {() => {
-                            navigate('/stack/new');
-                        }}
-                    />
-                </div>
-
-                <div>
-                    <div className="flex justify-between items-center gap-5 px-5">
-                        <span className="flex items-center gap-4 ml-1">
-                            <p>ID</p>
-                            <p>스택명</p>
-                        </span>
-                        <div className="flex gap-5">
-                            <p>타입</p>
-                            <p className="ml-10 mr-6">생성 일자</p>
+                    <div className="flex justfiy-center items-center text-2xl">관리 중인 스택 목록</div>
+                    <div className="gap-4 flex">
+                        <div>
+                            <Button
+                                color="white"
+                                bgColor={mainColor}
+                                text="새 스택 생성"
+                                borderRadius="10px"
+                                onClickFunc={() => {
+                                    // setIsModalOpen(!isModalOpen);
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <Button
+                                color="white"
+                                bgColor={mainColor}
+                                text="새 배포 생성"
+                                borderRadius="10px"
+                                onClickFunc={() => {
+                                    // setIsModalOpen(!isModalOpen);
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
 
-                <div className="p-3">
-                    {stacks.map((stack) => (
-                        <div key={stack.stack_id} className="flex justify-between items-center mb-4 bg-white border-1 rounded-2xl p-4 gap-7">
-                            <div className="flex items-center gap-5">
-                                <p>{stack.stack_id}</p>
-                                <div className="flex gap-4">
-                                    <div>
-                                        <p className="text-xl font-semibold">{stack.stack_name}</p>
-                                        <p className="text-sm text-gray-400">{stack.description}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex">
-                                <p>{stack.stack_type}</p>
-                                <div className="ml-16">
-                                    <p className="text-sm text-gray-400">{stack.created_at.substr(0, 10)}</p>
-                                    <p className="text-sm text-gray-400">{stack.created_at.substr(-8)}</p>
-                                </div>
-                            </div>
-                            {/* <p>{stack.created_at}</p> */}
-                        </div>
-                    ))}
-                </div>
+                <Table columns={columns} data={stacks} />
             </div>
         </>
     );
