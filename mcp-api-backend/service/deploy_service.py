@@ -48,10 +48,10 @@ async def deploy_infra_from_list(
         if (stack):
             provider = None
             if (stack.csp_type == "aws"):
-                res = crud_aws.get_team_aws_profile(db, team, deploy.environment)
+                res = crud_aws.get_credentials_aws_profile(db, deploy.environment, team)
                 provider = {
-                    "access_key_id": res.access_key_id,
-                    "secret_access_key": res.secret_access_key,
+                    "access_key_id": res.get("access_key"),
+                    "secret_access_key": res.get("secret_access_key"),
                 }
             elif (stack.csp_type == "gcp"):
                 res = crud_gcp.get_team_gcloud_profile(db, team, deploy.environment)

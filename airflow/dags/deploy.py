@@ -99,6 +99,8 @@ def copy_template(stack_type: str, **context):
 
     # XCOM에 타겟 스택의 변수 push
     context['ti'].xcom_push(key="stack_vars", value=target_stack_data.get("variables"))
+    # XCOM에 타켓 스택의 Provider 정보 push
+    context['ti'].xcom_push(key="stack_provider", value=target_stack_data.get("provider"))
 
 
     try:
@@ -162,6 +164,9 @@ def set_storage(stack_type: str, **context):
         f.write(provider_backend)
     logger.info("원격 저장소 설정 완료")
 
+    # Provider 설정
+    provider_data = context['ti'].xcom_pull(key='stack_provider', task_ids=f'copy_{stack_type}')
+
     cred_data = '''
     variable "aws_access_key" {
         type = string
@@ -174,8 +179,8 @@ def set_storage(stack_type: str, **context):
     '''
     tm = Template(cred_data)
     creds = tm.render(
-        aws_access_key='',  # TODO: Key 연결
-        aws_secret_key=''  # TODO: Secret 연결
+        aws_access_key=provider_data.get("access_key_id"),
+        aws_secret_key=provider_data.get("secret_access_key")
     )
     logger.info(creds)
 
