@@ -201,18 +201,24 @@ def plan(stack_type: str, **context):
 
     # Init
     try:
-        t.init(capture_output=True)  # TODO: 출력 캡처
+        return_code, stdout, stderr = t.init(capture_output=True)  # TODO: 출력 캡처
     except TerraformCommandError as e:
         logger.warn(e)
         raise e
+    logger.info("-"*80)
     logger.info("Terraform Init 성공")
+    logger.info(f"stdout: {stdout}")
+    logger.info("-"*80)
 
     # Plan
     try:
-        t.plan(capture_output=True, out="plan.out", var=var_dict)  # TODO: 출력 캡처
+        return_code, stdout, stderr = t.plan(capture_output=True, out="plan.out", var=var_dict)  # TODO: 출력 캡처
     except TerraformCommandError as e:
         logger.warn(e)
+    logger.info("-"*80)
     logger.info(f"Terraform Plan 성공")
+    logger.info(f"stdout: {stdout}")
+    logger.info("-"*80)
 
 
 def apply(stack_type: str, **context):
@@ -223,15 +229,21 @@ def apply(stack_type: str, **context):
 
     # Apply
     try:
-        t.apply("plan.out", capture_output=True)
+        return_code, stdout, stderr = t.apply("plan.out", capture_output=True)
     except TerraformCommandError as e:
         logger.warn(e)
+    logger.info("-"*80)
     logger.info("Terraform Apply 완료")
+    logger.info(f"stdout: {stdout}")
+    logger.info("-"*80)
 
     logger.info("10초 대기...")
     time.sleep(10)
-    t.destroy(capture_output=True, force=None)
+    return_code, stdout, stderr = t.destroy(capture_output=True, force=None)
+    logger.info("-"*80)
     logger.info("Terraform Destroy 완료")
+    logger.info(f"stdout: {stdout}")
+    logger.info("-"*80)
 
 
 download = PythonOperator(
