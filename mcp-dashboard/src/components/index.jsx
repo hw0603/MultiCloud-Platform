@@ -4,3 +4,4 @@ export { default as Notification } from "./Notification";
 export { default as UserProfile } from "./UserProfile";
 export { default as Button } from "./Button";
 export { default as Table } from "./Table";
+export { default as Modal } from "./Modal";
