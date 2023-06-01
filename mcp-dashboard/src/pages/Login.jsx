@@ -7,8 +7,8 @@ import axios from "axios";
 
 const Login = () => {
     const { isAuthorized, setIsAuthorized, mainColor, base_url } = useStateContext();
-    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -32,6 +32,7 @@ const Login = () => {
                     localStorage.setItem("accessToken", `${response.data.token_type} ${response.data.access_token}`);
                 }
                 setIsAuthorized(!isAuthorized);
+                localStorage.setItem("username", username);
             })
             .catch((error) => {
                 console.log("error :", error)
