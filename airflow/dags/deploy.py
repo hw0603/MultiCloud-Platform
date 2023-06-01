@@ -255,39 +255,43 @@ with DAG(
         dag=dag
     )
 
-    with TaskGroup(group_id='vpc') as vpc_group:
-        copy_task = PythonOperator(
-            task_id='copy',
-            provide_context=True,
-            python_callable=copy_template,
-            op_kwargs={'stack_type': 'vpc'},
-            dag=dag
-        )
-        storage_task = PythonOperator(
-            task_id='storage_and_creds',
-            provide_context=True,
-            python_callable=set_storage_and_creds,
-            op_kwargs={'stack_type': 'vpc'},
-            dag=dag
-        )
-        plan_task = PythonOperator(
-            task_id='plan',
-            provide_context=True,
-            python_callable=plan,
-            op_kwargs={'stack_type': 'vpc'},
-            dag=dag
-        )
-        apply_task = PythonOperator(
-            task_id='apply',
-            provide_context=True,
-            python_callable=apply,
-            op_kwargs={'stack_type': 'vpc'},
-            dag=dag
-        )
-        copy_task >> storage_task >> plan_task >> apply_task
+    groups = {}
+
+    for g_id in ["vpc", "alb"]:
+        with TaskGroup(group_id=g_id) as tg:
+            copy_task = PythonOperator(
+                task_id='copy',
+                provide_context=True,
+                python_callable=copy_template,
+                op_kwargs={'stack_type': 'vpc'},
+                dag=dag
+            )
+            storage_task = PythonOperator(
+                task_id='storage_and_creds',
+                provide_context=True,
+                python_callable=set_storage_and_creds,
+                op_kwargs={'stack_type': 'vpc'},
+                dag=dag
+            )
+            plan_task = PythonOperator(
+                task_id='plan',
+                provide_context=True,
+                python_callable=plan,
+                op_kwargs={'stack_type': 'vpc'},
+                dag=dag
+            )
+            apply_task = PythonOperator(
+                task_id='apply',
+                provide_context=True,
+                python_callable=apply,
+                op_kwargs={'stack_type': 'vpc'},
+                dag=dag
+            )
+            copy_task >> storage_task >> plan_task >> apply_task
+            groups[g_id] = tg
 
 
-        download >> vpc_group
+    download >> groups["vpc"] >> groups["alb"]
 
 
 
