@@ -3,11 +3,27 @@ import { Button, Table, Modal } from "../components";
 import { useStateContext } from "../contexts/ContextProvider";
 import axios from "axios";
 import { BsFillTrashFill } from "react-icons/bs"
+import { BsSearch } from "react-icons/bs"
 
-let ModalContentType = 1;
+let ModalContentType = -1;
+let stackIdx = -1;
 
 const refresh = () => {
     window.location.replace("/stack");
+}
+
+const ObjCompare = (obj1, obj2) => {
+    const Obj1_keys = Object.keys(obj1);
+    const Obj2_keys = Object.keys(obj2);
+    if (Obj1_keys.length !== Obj2_keys.length) {
+        return false;
+    }
+    for (let k of Obj1_keys) {
+        if (obj1[k] !== obj2[k]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 const ModalComponentCreateStack = () => {
@@ -95,9 +111,36 @@ const ModalComponentCreateStack = () => {
     );
 };
 
+const ModalComponentStackParameter = ({ stackData }) => {
+    const variables = Object.entries(stackData.var_json.variable);
+    return (
+        <>
+            <div className="flex flex-wrap gap-4 mt-4">
+                {variables.map((item) => (
+                    <div key={item[0]} className="border-2 w-2/5 rounded-xl p-2 flex-auto">
+                        <span className="font-bold text-lg">{item[0]}</span><span className="text-sm">{` <${item[1].type}>`}</span>
+                        <h2 className="text-sm">{`기본값 : ${item[1].default} `}</h2>
+                    </div>
+                ))}
+            </div>
+        </>
+    );
+}
+
 const Stack = () => {
     const { mainColor, base_url, isModalOpen, setIsModalOpen } = useStateContext();
     const [stacks, setStacks] = useState([]);
+    const [stackData, setStackData] = useState();
+    const [checkedInputs, setCheckedInputs] = useState([]);
+
+    const changeHandler = (checked, item) => {
+        if (checked) {
+            setCheckedInputs([...checkedInputs, item]);
+        }
+        else {
+            setCheckedInputs(checkedInputs.filter(el => ObjCompare(el, item) === false));
+        }
+    }
 
     const getStackList = () => {
         axios({
@@ -133,51 +176,81 @@ const Stack = () => {
             })
     }
 
-    const columns = useMemo(
-        () => [
-            {
-                accessor: "stack_id",
-                Header: "ID",
-            },
-            {
-                accessor: "stack_name",
-                Header: "스택명"
-            },
-            {
-                accessor: "description",
-                Header: "설명"
-            },
-            {
-                accessor: "csp_type",
-                Header: "CSP 타입"
-            },
-            {
-                accessor: "stack_type",
-                Header: "스택 타입"
-            },
-            {
-                accessor: "created_at",
-                Header: "생성 날짜"
-            },
-            {
-                accessor: "delete",
-                Header: "삭제",
-                Cell: tableProps => (
-                    <div className="flex items-center justify-center">
-                        <button onClick={() => {
-                            if (window.confirm("선택한 스택을 삭제하시겠습니까?")) {
-                                deleteStack(tableProps.data[tableProps.row.index].stack_name)
-                            }
-                        }} style={{ color: "black", }}>
-                            <BsFillTrashFill />
-                        </button>
-                    </div>
-                ),
-                minWidth: 140,
-                width: 200,
-            },
-        ], []
-    );
+    const columns = [
+        {
+            accessor: "select",
+            Header: "",
+            Cell: (tableProps) => (
+                <div className="flex items-center justify-center">
+                    <input type="checkbox" onChange={(e) => {
+                        changeHandler(e.target.checked, tableProps.data[tableProps.row.index])
+                    }}
+                        checked={checkedInputs.includes(tableProps.data[tableProps.row.index]) ? true : false}
+                    />
+                </div>
+            ),
+            minWidth: 10,
+            width: 10,
+        },
+        {
+            accessor: "stack_id",
+            Header: "ID",
+        },
+        {
+            accessor: "stack_name",
+            Header: "스택명"
+        },
+        {
+            accessor: "description",
+            Header: "설명"
+        },
+        {
+            accessor: "csp_type",
+            Header: "CSP 타입"
+        },
+        {
+            accessor: "stack_type",
+            Header: "스택 타입"
+        },
+        {
+            accessor: "created_at",
+            Header: "생성 날짜"
+        },
+        {
+            accessor: "delete",
+            Header: "삭제",
+            Cell: tableProps => (
+                <div className="flex items-center justify-center">
+                    <button onClick={() => {
+                        if (window.confirm("선택한 스택을 삭제하시겠습니까?")) {
+                            deleteStack(tableProps.data[tableProps.row.index].stack_name)
+                        }
+                    }} style={{ color: "black", }}>
+                        <BsFillTrashFill />
+                    </button>
+                </div>
+            ),
+            minWidth: 140,
+            width: 200,
+        },
+        {
+            accessor: "parameters",
+            Header: "변수 확인",
+            Cell: tableProps => (
+                <div className="flex items-center justify-center">
+                    <button onClick={() => {
+                        ModalContentType = 3;
+                        setStackData(tableProps.data[tableProps.row.index]);
+                        setIsModalOpen(true);
+                    }} style={{ color: "black", }}>
+                        <BsSearch />
+                    </button>
+                </div>
+            ),
+            minWidth: 140,
+            width: 200,
+        },
+    ];
 
     useLayoutEffect(() => {
         getStackList();
@@ -208,8 +281,9 @@ const Stack = () => {
                                 text="새 배포 생성"
                                 borderRadius="10px"
                                 onClickFunc={() => {
-                                    ModalContentType = 2;
-                                    setIsModalOpen(!isModalOpen);
+                                    // ModalContentType = 2;
+                                    // setIsModalOpen(!isModalOpen);
+                                    console.log(checkedInputs)
                                 }}
                             />
                         </div>
@@ -220,7 +294,9 @@ const Stack = () => {
             </div>
             {isModalOpen &&
                 (ModalContentType == 1 ? <Modal title="새 스택 생성"><ModalComponentCreateStack /></Modal> :
-                    <Modal title="dummy"></Modal>)}
+                    ModalContentType == 2 ? <Modal title="dummy"></Modal> :
+                        <Modal title="파라미터" width="3/5"><ModalComponentStackParameter stackData={stackData} /></Modal>
+                )}
         </>
     );
 };
