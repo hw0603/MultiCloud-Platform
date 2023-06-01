@@ -1,13 +1,102 @@
 import React, { useLayoutEffect, useMemo, useState } from "react";
-import { Button, Table } from "../components";
+import { Button, Table, Modal } from "../components";
 import { useStateContext } from "../contexts/ContextProvider";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { BsFillTrashFill } from "react-icons/bs"
 
-const Stack = () => {
+let ModalContentType = 1;
+
+const refresh = () => {
+    window.location.replace("/stack");
+}
+
+const ModalComponentCreateStack = () => {
     const { mainColor, base_url } = useStateContext();
-    const navigate = useNavigate();
+
+    const createStack = () => {
+        const stackType = document.getElementById("stackType").value;
+        const CSPType = document.getElementById("CSPType").value;
+        const stackName = document.getElementById("stackName").value;
+        const stackDesc = document.getElementById("stackDesc").value;
+
+        if (stackType && CSPType && stackName && stackDesc) {
+            axios({
+                method: "POST",
+                url: `${base_url}/api/v1/stacks`,
+                headers: {
+                    "Authorization": localStorage.getItem("accessToken")
+                },
+                data: {
+                    stack_name: stackName,
+                    stack_type: stackType,
+                    csp_type: CSPType,
+                    description: stackDesc,
+                }
+            })
+                .then((resp) => {
+                    console.log(resp)
+                    alert("스택이 생성되었습니다.")
+                    refresh();
+                })
+                .catch((error) => {
+                    console.log("error", error)
+                })
+        }
+    }
+
+    return (
+        <div>
+            <div className="mt-6 flex flex-col gap-4">
+                <div>
+                    <select id="stackType" className="border-2 p-3 rounded-xl w-full" defaultValue="">
+                        <option value="">스택 종류 선택</option>
+                        <option value="alb">alb</option>
+                        <option value="bastion">bastion</option>
+                        <option value="key_pair">key_pair</option>
+                        <option value="nat_gateway">nat_gateway</option>
+                        <option value="route_table">route_table</option>
+                        <option value="security_group">security_group</option>
+                        <option value="subnet">subnet</option>
+                        <option value="vpc">vpc</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="CSPType" className="border-2 p-3 rounded-xl w-full" defaultValue="">
+                        <option value="">CSP 종류 선택</option>
+                        <option value="aws">AWS</option>
+                        <option value="gcp">GCP</option>
+                        <option value="azure">Azure</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div>
+                    <p className="mb-1">Stack Name</p>
+                    <input id="stackName" type="text" className="border-2 p-2 rounded-xl w-full" />
+                </div>
+                <div>
+                    <p className="mb-1">Description</p>
+                    <input id="stackDesc" type="text" className="border-2 p-2 rounded-xl w-full" />
+                </div>
+            </div>
+            <div className="mt-10">
+                <Button
+                    color="white"
+                    bgColor={mainColor}
+                    text="새 스택 생성"
+                    borderRadius="10px"
+                    onClickFunc={() => {
+                        if (window.confirm("스택을 생성하시겠습니까?")) {
+                            createStack();
+                        }
+                    }}
+                />
+            </div>
+        </div>
+    );
+};
+
+const Stack = () => {
+    const { mainColor, base_url, isModalOpen, setIsModalOpen } = useStateContext();
     const [stacks, setStacks] = useState([]);
 
     const getStackList = () => {
@@ -19,7 +108,6 @@ const Stack = () => {
             },
         })
             .then((response) => {
-                console.log(response);
                 setStacks(response.data);
             })
             .catch((error) => {
@@ -27,17 +115,17 @@ const Stack = () => {
             })
     }
 
-
-    const deleteProvider = (id) => {
+    const deleteStack = (stack_name) => {
         axios({
             method: "DELETE",
-            url: `${base_url}/api/v1/aws/${id}`,
+            url: `${base_url}/api/v1/stacks/${stack_name}`,
             headers: {
                 "Authorization": localStorage.getItem("accessToken")
             },
         })
-            .then(() => {
-                alert("선택한 프로바이더를 삭제하였습니다.")
+            .then((resp) => {
+                console.log("resp", resp)
+                alert("선택한 스택을 삭제하였습니다.")
                 getStackList();
             })
             .catch((error) => {
@@ -78,7 +166,7 @@ const Stack = () => {
                     <div className="flex items-center justify-center">
                         <button onClick={() => {
                             if (window.confirm("선택한 스택을 삭제하시겠습니까?")) {
-                                deleteProvider(tableProps.data[tableProps.row.index].id)
+                                deleteStack(tableProps.data[tableProps.row.index].stack_name)
                             }
                         }} style={{ color: "black", }}>
                             <BsFillTrashFill />
@@ -108,7 +196,8 @@ const Stack = () => {
                                 text="새 스택 생성"
                                 borderRadius="10px"
                                 onClickFunc={() => {
-                                    // setIsModalOpen(!isModalOpen);
+                                    ModalContentType = 1;
+                                    setIsModalOpen(!isModalOpen);
                                 }}
                             />
                         </div>
@@ -119,7 +208,8 @@ const Stack = () => {
                                 text="새 배포 생성"
                                 borderRadius="10px"
                                 onClickFunc={() => {
-                                    // setIsModalOpen(!isModalOpen);
+                                    ModalContentType = 2;
+                                    setIsModalOpen(!isModalOpen);
                                 }}
                             />
                         </div>
@@ -128,6 +218,9 @@ const Stack = () => {
 
                 <Table columns={columns} data={stacks} />
             </div>
+            {isModalOpen &&
+                (ModalContentType == 1 ? <Modal title="새 스택 생성"><ModalComponentCreateStack /></Modal> :
+                    <Modal title="dummy"></Modal>)}
         </>
     );
 };
