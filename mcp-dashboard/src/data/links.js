@@ -18,6 +18,7 @@ export const links = [
       {
         name: '사용자',
         value: 'user',
+        banRole: ["user"],
         icon: <HiUserGroup />,
       },
       {

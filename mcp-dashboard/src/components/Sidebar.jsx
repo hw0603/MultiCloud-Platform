@@ -39,7 +39,8 @@ const Sidebar = () => {
                     backgroundColor: isActive ? mainColor : "",
                   })}
                   className={({ isActive }) =>
-                    isActive ? activeLink : normalLink
+                  link.banRole && link.banRole.includes(localStorage.getItem("role")) ? `hidden` :
+                      (isActive ? `${activeLink}` : `${normalLink}`)
                   }
                 >
                   {link.icon}

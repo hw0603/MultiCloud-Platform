@@ -33,6 +33,8 @@ const Login = () => {
                 }
                 setIsAuthorized(!isAuthorized);
                 localStorage.setItem("username", username);
+                localStorage.setItem("role", response.data.role);
+                console.log(response);
             })
             .catch((error) => {
                 console.log("error :", error)
