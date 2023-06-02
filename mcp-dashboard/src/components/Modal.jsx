@@ -3,7 +3,7 @@ import { useStateContext } from "../contexts/ContextProvider";
 import {MdOutlineCancel} from "react-icons/md"
 import {Button} from ".";
 
-const Modal = ({ children, title }) => {
+const Modal = ({ children, title, width="2/5" }) => {
     const { setIsModalOpen, mainColor, base_url } = useStateContext();
     const closeModal = () => {
         setIsModalOpen(false);
@@ -11,7 +11,7 @@ const Modal = ({ children, title }) => {
 
     return (
         <div className="absolute left-0 top-0 min-w-full min-h-full bg-black/50 flex justify-center items-center" id="modal_mask" onClick={closeModal}>
-            <div className="m-10 bg-white w-1/3 p-10 rounded-2xl" onClick={(event) => {
+            <div className={`m-10 bg-white p-10 rounded-2xl w-${width}`} onClick={(event) => {
                 event.stopPropagation();
             }
             }>
