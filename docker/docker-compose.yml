@@ -65,7 +65,7 @@ x-airflow-common:
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
-    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__CORE__DEFAULT_TIMEZONE: Asia/Seoul
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
@@ -81,6 +81,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-../airflow}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-../airflow}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-../airflow}/plugins:/opt/airflow/plugins
+    - mcp-volume:/mcp_infra
     # - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
@@ -362,6 +363,7 @@ services:
       - grafana
     volumes:
       - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
+      - mcp-volume:/tmp
   
   # API Server Celery Worker
   worker:
@@ -384,6 +386,7 @@ services:
     restart: on-failure
     volumes:
       - ${API_BACKEND_DIR:-../mcp-api-backend}:/app:ro  # Read-only
+      - mcp-volume:/tmp # Read-Write 가능하도록 별도의 볼륨 마운트
   
   # Remote State
   remote-state:
@@ -429,3 +432,4 @@ services:
 volumes:
   postgres-db-volume:
   grafana-volume:
+  mcp-volume:

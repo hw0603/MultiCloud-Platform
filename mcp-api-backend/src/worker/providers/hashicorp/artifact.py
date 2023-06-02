@@ -80,6 +80,7 @@ class ArtifactFromTemplate(StructBase):
 
         try:
             directory = f"/tmp/{self.csp_type}_{self.stack_name}/{self.environment}/{self.team}/"
+            os.umask(0)
             os.makedirs(directory, exist_ok=True)
             logger.info(f"Directory {directory} created successfully")
         except OSError:

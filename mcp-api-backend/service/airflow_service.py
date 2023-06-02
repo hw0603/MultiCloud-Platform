@@ -8,7 +8,8 @@ webserver_url = f"http://{airflow_settings.AIRFLOW_URL}"
 airflow_creds = base64.b64encode(airflow_settings.AIRFLOW_CREDS.encode("utf-8")).decode("utf-8")
 headers = {
     "Authorization": f"Basic {airflow_creds}",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Accept": "application/json"
 }
 s = requests.Session()
 s.headers.update(headers)
@@ -63,5 +64,7 @@ def get_task_xcom(dag_id: str, dag_run_id: str, task_id: str) -> dict:
 def get_task_log(dag_id: str, dag_run_id: str, task_id: str, task_try_number: int = 1) -> str:
     API_PATH = f"/api/v1/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/logs/{task_try_number}"
     response = s.get(f"{webserver_url}{API_PATH}")
+    log_content = response.json().get("content", "")
+    token = response.json().get("continuation_token", None)
 
-    return response.text
+    return log_content.replace("\\n", "\n")
