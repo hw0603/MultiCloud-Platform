@@ -277,9 +277,15 @@ with DAG(
         dag=dag
     )
 
+    infra_types = [
+        "vpc", "subnet", "security_group",
+        "nat_gateway", "route_table", "route_rule", "route_table_association",
+        "key_pair", "bastion", "alb"
+    ]
+
     groups = {}
 
-    for g_id in ["vpc", "alb", "bastion"]:
+    for g_id in infra_types:
         with TaskGroup(group_id=g_id) as tg:
             check_task = BranchPythonOperator(
                 task_id='check',
@@ -327,7 +333,16 @@ with DAG(
             groups[g_id] = tg
 
     # TODO: Stack 간 의존성 설정
-    download >> groups["vpc"] >> groups["alb"] >> groups["bastion"]
+    def iter_task_group():
+        for gid in infra_types:
+            yield groups[gid]
+
+
+    download >> groups["vpc"] >> groups["subnet"] >> groups["security_group"] >> groups["nat_gateway"] >> groups["route_table"] >> groups["route_rule"] >> groups["route_table_association"] >> groups["key_pair"] >> groups["bastion"] >> groups["alb"]
+    
+    # 병렬처리 (의존관계 XCOM으로 관리해 주어야 함)
+    # for gid in infra_types:
+    #     download >> groups[gid]
 
 
 
