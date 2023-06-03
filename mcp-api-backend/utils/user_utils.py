@@ -103,3 +103,6 @@ def check_team_user(owner_team: str, add_user_team: str) -> bool:
 
 def check_role_user(add_user_role: str):
     return add_user_role == ["user"]
+
+def check_same_username(current_username: str, db_username: str):
+    return current_username == db_username
