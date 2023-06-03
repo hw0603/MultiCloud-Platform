@@ -9,7 +9,7 @@ from repository import activity_logs_repository as crud_activity
 from sqlalchemy.orm import Session
 from db.connection import get_db
 from utils.utils import object_as_dict
-from utils.user_utils import check_team_user, check_role_user, validate_email
+from utils.user_utils import check_team_user, check_role_user, check_same_username, validate_email
 from entity.user_entity import UserInit, UserCreate, User
 from utils.user_utils import validate_password
 from src.shared.security import deps
@@ -110,8 +110,6 @@ async def get_user_by_id_or_name(
     current_user: User = Depends(deps.get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    if not crud_users.is_superuser(db, current_user):
-        raise HTTPException(status_code=403, detail="해당 작업에 대한 권한이 없습니다.")
     try:
         if not user.isdigit():
             user_info = crud_users.get_user_by_username(db=db, username=user)
@@ -122,6 +120,9 @@ async def get_user_by_id_or_name(
         # team_manager는 조회하고자 하는 사용자와 팀이 같은 사용자만 조회 가능
         if not crud_users.is_master(db, current_user):
             if not check_team_user(current_user.team, user_info.team):
+                raise Exception("해당 작업에 대한 권한이 없습니다.")
+        if not crud_users.is_superuser(db, current_user):
+            if not check_same_username(current_user.username, user_info.username):
                 raise Exception("해당 작업에 대한 권한이 없습니다.")
         return user_info
     except Exception as err:
