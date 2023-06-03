@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import { Button, Table, Modal } from "../components";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 import axios from "axios";
 import { BsFillTrashFill } from "react-icons/bs"
@@ -132,6 +132,7 @@ const Stack = () => {
     const { mainColor, base_url, isModalOpen, setIsModalOpen, checkedInputs, setCheckedInputs } = useStateContext();
     const [stacks, setStacks] = useState([]);
     const [stackData, setStackData] = useState();
+    const navigate = useNavigate();
 
     const changeHandler = (checked, item) => {
         if (checked) {
@@ -275,20 +276,23 @@ const Stack = () => {
                             />
                         </div>
                         <div>
-                            <Link to="/deploy/new">
-                                <Button
-                                    color="white"
-                                    bgColor={mainColor}
-                                    text="새 배포 생성"
-                                    borderRadius="10px"
-                                    onClickFunc={() => {
-                                        // ModalContentType = 2;
-                                        // setIsModalOpen(!isModalOpen);
-                                        console.log(checkedInputs)
-                                        window.location.replace("/deploy/new");
-                                    }}
-                                />
-                            </Link>
+                            <Button
+                                color="white"
+                                bgColor={mainColor}
+                                text="새 배포 생성"
+                                borderRadius="10px"
+                                onClickFunc={() => {
+                                    // ModalContentType = 2;
+                                    // setIsModalOpen(!isModalOpen);
+                                    // console.log(checkedInputs)
+                                    // window.location.replace("/deploy/new");
+                                    navigate("/deploy/new", {
+                                        state: {
+                                            checkedInputs: checkedInputs
+                                        }
+                                    })
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
