@@ -31,7 +31,7 @@ const UserProfile = () => {
   } ,[])
 
   return (
-    <div className="nav-item absolute right-1 top-16 bg-white dark:bg-[#42464D] p-8 rounded-lg w-96">
+    <div className="nav-item absolute right-1 top-16 bg-white dark:bg-[#42464D] p-8 rounded-lg w-96 border-1">
       <div className="flex justify-between items-center">
         <p className="font-semibold text-lg dark:text-gray-200">유저 프로필</p>
         <Button
