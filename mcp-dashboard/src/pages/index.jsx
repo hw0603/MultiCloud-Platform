@@ -1,6 +1,7 @@
 export { default as Home } from "./Home";
 export { default as Dashboard } from "./Dashboard";
 export { default as Deploy } from "./Deploy";
+export { default as CreateDeploy } from "./CreateDeploy";
 export { default as Log } from "./Log";
 export { default as OpLog } from "./OpLog";
 export { default as Stack } from "./Stack";
