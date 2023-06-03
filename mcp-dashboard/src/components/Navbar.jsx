@@ -33,13 +33,7 @@ const Navbar = () => {
   return (
     <div className="flex justify-end p-2 md:ml-6 md:mr-6 relative">
       <div className="flex">
-        <button onClick={() => {
-            setIsAuthorized(false);
-            localStorage.clear();
-        }}>
-          logout
-        </button>
-        
+
         <NavButton
           dotColor="#EA4336"
           onClickFunc={() => handleClick("notification")}
@@ -56,11 +50,11 @@ const Navbar = () => {
             alt="user-profile"
           />
           <p>
-            <span className="text-gray-400 text-14">안녕하세요,</span>{" "}
-            <span className="text-gray-400 font-bold ml-1 text-15">
-              승기
+            <span className="text-gray-400 text-14 font-bold">
+              {localStorage.getItem("username")}
             </span>
-            <span className="text-gray-400 text-14">님</span>{" "}
+            <span className="text-gray-400 font-bold ml-1 text-15">
+            </span>
           </p>
           <MdKeyboardArrowDown className="text-gray-400 text-14" />
         </div>
