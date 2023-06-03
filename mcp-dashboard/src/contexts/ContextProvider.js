@@ -12,6 +12,7 @@ export const ContextProvider = ({ children }) => {
   const [isAuthorized, setIsAuthorized] = useState(localStorage.getItem("accessToken"));
   const [stacks, setStacks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [checkedInputs, setCheckedInputs] = useState([]);
   const mainColor = "#03C9D7";
   const base_url = 'http://localhost:8000';
   const handleClick = (clicked) =>
@@ -33,6 +34,8 @@ export const ContextProvider = ({ children }) => {
         setIsAuthorized,
         isModalOpen,
         setIsModalOpen,
+        checkedInputs,
+        setCheckedInputs,
       }}
     >
       {children}
