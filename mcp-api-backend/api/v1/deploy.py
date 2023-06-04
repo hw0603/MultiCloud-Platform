@@ -37,12 +37,18 @@ async def deploy_infra_from_list(
 #     return delete_deploy
 
 
-# @router.get("/")
-# async def get_all_deploys(
-#     get_all_deploys: schemas_deploy.DeployBase = Depends(deploy_service.get_all_deploys),
-# ):
-#     return get_all_deploys
+@router.get("/")
+async def get_all_deploys(
+    get_all_deploys: schemas_deploy.DeployCreate = Depends(deploy_service.get_all_deploys),
+):
+    return get_all_deploys
 
+
+@router.get("/{deploy_id}")
+async def get_deploy_by_id(
+    get_deploy: schemas_deploy.DeployBase = Depends(deploy_service.get_deploy_detail_by_id),
+):
+    return get_deploy
 
 @router.get("/{run_id}")
 async def get_deploy_status(
@@ -57,11 +63,6 @@ async def get_deploy_logs(
 ):
     return get_deploy_logs
 
-# @router.get("/{deploy_id}")
-# async def get_deploy_by_id(
-#     get_deploy: schemas_deploy.DeployBase = Depends(deploy_service.get_deploy_by_id),
-# ):
-#     return get_deploy
 
 
 # @router.get("/output/{deploy_id}", status_code=200)

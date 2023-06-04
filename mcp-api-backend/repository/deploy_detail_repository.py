@@ -25,3 +25,9 @@ def create_new_deploy_detail(
         return db_deploy_detail
     except Exception as err:
         raise err
+
+def get_deploy_details_by_deploy_id(
+    db: Session,
+    deploy_id: int,
+):
+    return db.query(models.DeployDetail).filter(models.DeployDetail.deploy_id == deploy_id).all()
