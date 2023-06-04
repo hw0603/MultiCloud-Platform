@@ -39,8 +39,12 @@ class DeployUpdate(BaseModel):
 class DeployResponsewithDetail(BaseModel):
     deploy_id: int
     deploy_name: constr(strip_whitespace=True)
-    start_time: constr(strip_whitespace=True)
-    destroy_time: constr(strip_whitespace=True)
+    start_time: Optional[constr(strip_whitespace=True)] = Field(
+        None, example="30 7 * * 0-4"
+    )
+    destroy_time: Optional[constr(strip_whitespace=True)] = Field(
+        None, example="30 8 * * 0-4"
+    )
     user_id: int
     username: constr(strip_whitespace=True)
     team: constr(strip_whitespace=True)
