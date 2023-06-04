@@ -12,3 +12,4 @@ export { default as Login } from "./Login";
 export { default as BasePage } from "./BasePage";
 export { default as Router } from "./Router";
 export { default as Layout } from "./Layout";
+export { default as DeployLog } from "./DeployLog";

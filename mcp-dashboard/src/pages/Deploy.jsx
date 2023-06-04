@@ -98,8 +98,22 @@ const Deploy = () => {
                     </button>
                 </div>
             ),
-            minWidth: 140,
-            width: 200,
+        },
+        {
+            accessor: "log",
+            Header: "로그 조회",
+            Cell: tableProps => (
+                <div className="flex items-center justify-center">
+                    <button onClick={() => {
+                        navigate("/deploy/log", {state: {
+                            task_id: tableProps.data[tableProps.row.index].task_id,
+                            deploy_id: tableProps.data[tableProps.row.index].deploy_id,
+                        }})
+                    }} style={{ color: "black", }}>
+                        <BsSearch />
+                    </button>
+                </div>
+            ),
         },
     ];
 
