@@ -14,17 +14,7 @@ from jinja2 import Template
 from airflow.utils.task_group import TaskGroup
 from airflow.operators.python import BranchPythonOperator
 
-"""
-TODO:
-Stack 들의 연산은 트랜잭션 처리되어야 함.
-XCOM 같은 기법을 사용하여 이전 스택이 성공적으로 생성되었는지 확인 후 다음 스택을 생성해야 함.
-
-인프라 별로 매 번 params를 파싱하기보다 파싱하는 Task를 우선 수행하고, Xcom에서 데이터 가져오는 것이 효율적일 것 같음
-
-작업 별로 로깅 자세히 하기, terraform output을 로깅에 포함시키기
-
-Task Group과 Skip를 적절히 사용하고, Dynamic Workflow를 구현하여 작업을 효율적으로 수행할 수 있도록 하기
-"""
+# TODO: 인프라 별로 매 번 params를 파싱하기보다 파싱하는 Task를 우선 수행하고, Xcom에서 데이터 가져오는 것이 효율적일 것 같음
 
 t = Terraform()
 
