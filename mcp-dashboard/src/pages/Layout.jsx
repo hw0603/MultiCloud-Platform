@@ -16,7 +16,7 @@ const Layout = () => {
                         <Navbar />
                     </div>
 
-                    <div>
+                    <div className="w-full h-full">
                         <BasePage />
                     </div>
                 </div>

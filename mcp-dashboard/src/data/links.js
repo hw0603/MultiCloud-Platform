@@ -32,7 +32,7 @@ export const links = [
         icon: <TbPackageExport />,
       },
       {
-        name: '작업 로그',
+        name: '작업 현황',
         value: 'opLog',
         icon: <BsFillChatDotsFill />,
       },
