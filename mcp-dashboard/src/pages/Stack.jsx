@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import { Button, Table, Modal } from "../components";
+import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 import axios from "axios";
 import { BsFillTrashFill } from "react-icons/bs"
@@ -128,10 +129,10 @@ const ModalComponentStackParameter = ({ stackData }) => {
 }
 
 const Stack = () => {
-    const { mainColor, base_url, isModalOpen, setIsModalOpen } = useStateContext();
+    const { mainColor, disabledColor, base_url, isModalOpen, setIsModalOpen, checkedInputs, setCheckedInputs } = useStateContext();
     const [stacks, setStacks] = useState([]);
     const [stackData, setStackData] = useState();
-    const [checkedInputs, setCheckedInputs] = useState([]);
+    const navigate = useNavigate();
 
     const changeHandler = (checked, item) => {
         if (checked) {
@@ -277,13 +278,16 @@ const Stack = () => {
                         <div>
                             <Button
                                 color="white"
-                                bgColor={mainColor}
+                                bgColor={checkedInputs.length !== 0 ? mainColor : disabledColor}
+                                disabled={checkedInputs.length === 0}
                                 text="새 배포 생성"
                                 borderRadius="10px"
                                 onClickFunc={() => {
-                                    // ModalContentType = 2;
-                                    // setIsModalOpen(!isModalOpen);
-                                    console.log(checkedInputs)
+                                    navigate("/deploy/new", {
+                                        state: {
+                                            checkedInputs: checkedInputs
+                                        }
+                                    })
                                 }}
                             />
                         </div>

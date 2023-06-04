@@ -12,7 +12,8 @@ const Button = ({
   borderRadius,
   width,
   onClickFunc,
-  type
+  type,
+  disabled
 }) => {
   const { setIsClicked, initialState } = useStateContext();
   const navigate = useNavigate();
@@ -21,7 +22,8 @@ const Button = ({
       type={type}
       onClick={onClickFunc}
       style={{ backgroundColor: bgColor, color, borderRadius }}
-      className={` text-${size} p-3 w-${width} hover:drop-shadow-xl hover:bg-${bgHoverColor}`}
+      className={disabled ? `text-${size} p-3 w-${width}` : `text-${size} p-3 w-${width} hover:drop-shadow-xl hover:bg-${bgHoverColor}`}
+      disabled={disabled}
     >
       {icon} {text}
     </button>
