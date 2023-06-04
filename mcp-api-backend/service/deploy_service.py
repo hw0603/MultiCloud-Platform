@@ -189,11 +189,12 @@ async def get_deploy_detail_by_id(
 
     detail_result = []
     for detail in deploy_details:
-        stack_name = crud_stacks.get_stack_by_id(db, detail.stack_id).stack_name
+        st = crud_stacks.get_stack_by_id(db, detail.stack_id)
         detail_result.append(
             schemas_deploy.DeployDetailResponse(
                 detail_id=detail.id,
-                stack_name=stack_name,
+                stack_name=st.stack_name,
+                stack_type=st.stack_type,
                 tfvar_file=detail.tfvar_file,
                 variables=detail.variables,
             )
