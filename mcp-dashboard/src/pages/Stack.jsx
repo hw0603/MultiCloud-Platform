@@ -129,7 +129,7 @@ const ModalComponentStackParameter = ({ stackData }) => {
 }
 
 const Stack = () => {
-    const { mainColor, base_url, isModalOpen, setIsModalOpen, checkedInputs, setCheckedInputs } = useStateContext();
+    const { mainColor, disabledColor, base_url, isModalOpen, setIsModalOpen, checkedInputs, setCheckedInputs } = useStateContext();
     const [stacks, setStacks] = useState([]);
     const [stackData, setStackData] = useState();
     const navigate = useNavigate();
@@ -278,14 +278,11 @@ const Stack = () => {
                         <div>
                             <Button
                                 color="white"
-                                bgColor={mainColor}
+                                bgColor={checkedInputs.length !== 0 ? mainColor : disabledColor}
+                                disabled={checkedInputs.length === 0}
                                 text="새 배포 생성"
                                 borderRadius="10px"
                                 onClickFunc={() => {
-                                    // ModalContentType = 2;
-                                    // setIsModalOpen(!isModalOpen);
-                                    // console.log(checkedInputs)
-                                    // window.location.replace("/deploy/new");
                                     navigate("/deploy/new", {
                                         state: {
                                             checkedInputs: checkedInputs
