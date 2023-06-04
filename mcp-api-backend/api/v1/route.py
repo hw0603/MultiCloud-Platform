@@ -18,5 +18,6 @@ api_router.include_router(azure.router, prefix="/azure", tags=["Azure"])
 api_router.include_router(custom_provider.router, prefix="/custom_provider", tags=["CustomProvider"])
 api_router.include_router(deploy.router, prefix="/deploy", tags=["Deploy"])
 api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
+api_router.include_router(status.router, prefix="/status", tags=["Status"])
 
 # api_router.include_router(testapi.router, prefix="/test", tags=["Test"])
