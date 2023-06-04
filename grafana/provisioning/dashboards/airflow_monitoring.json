@@ -54,12 +54,17 @@
                                 "false": {
                                     "color": "text",
                                     "index": 0,
-                                    "text": "대기 중"
+                                    "text": "-"
                                 },
                                 "queued": {
                                     "color": "orange",
                                     "index": 2,
                                     "text": "큐잉 완료"
+                                },
+                                "removed": {
+                                    "color": "purple",
+                                    "index": 6,
+                                    "text": "삭제됨"
                                 },
                                 "running": {
                                     "color": "blue",
@@ -70,6 +75,11 @@
                                     "color": "yellow",
                                     "index": 1,
                                     "text": "스케줄링 완료"
+                                },
+                                "skipped": {
+                                    "color": "#00ffe1",
+                                    "index": 7,
+                                    "text": "건너뜀"
                                 },
                                 "success": {
                                     "color": "green",
@@ -90,7 +100,32 @@
                         ]
                     }
                 },
-                "overrides": []
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "terraform_download"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 172
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "run_id\\task_id"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 363
+                            }
+                        ]
+                    }
+                ]
             },
             "gridPos": {
                 "h": 8,
@@ -110,7 +145,8 @@
                     ],
                     "show": false
                 },
-                "showHeader": true
+                "showHeader": true,
+                "sortBy": []
             },
             "pluginVersion": "9.5.1",
             "targets": [
@@ -172,12 +208,68 @@
                     "options": {
                         "excludeByName": {},
                         "indexByName": {
+                            "alb.apply": 61,
+                            "alb.check": 56,
+                            "alb.copy": 58,
+                            "alb.plan": 60,
+                            "alb.skip": 57,
+                            "alb.storage_and_creds": 59,
+                            "bastion.apply": 55,
+                            "bastion.check": 50,
+                            "bastion.copy": 52,
+                            "bastion.plan": 54,
+                            "bastion.skip": 51,
+                            "bastion.storage_and_creds": 53,
+                            "key_pair.apply": 49,
+                            "key_pair.check": 44,
+                            "key_pair.copy": 46,
+                            "key_pair.plan": 48,
+                            "key_pair.skip": 45,
+                            "key_pair.storage_and_creds": 47,
+                            "nat_gateway.apply": 25,
+                            "nat_gateway.check": 20,
+                            "nat_gateway.copy": 22,
+                            "nat_gateway.plan": 24,
+                            "nat_gateway.skip": 21,
+                            "nat_gateway.storage_and_creds": 23,
+                            "route_rule.apply": 37,
+                            "route_rule.check": 32,
+                            "route_rule.copy": 34,
+                            "route_rule.plan": 36,
+                            "route_rule.skip": 33,
+                            "route_rule.storage_and_creds": 35,
+                            "route_table.apply": 31,
+                            "route_table.check": 26,
+                            "route_table.copy": 28,
+                            "route_table.plan": 30,
+                            "route_table.skip": 27,
+                            "route_table.storage_and_creds": 29,
+                            "route_table_association.apply": 43,
+                            "route_table_association.check": 38,
+                            "route_table_association.copy": 40,
+                            "route_table_association.plan": 42,
+                            "route_table_association.skip": 39,
+                            "route_table_association.storage_and_creds": 41,
                             "run_id\\task_id": 0,
-                            "task_1": 1,
-                            "task_2": 2,
-                            "task_3": 3,
-                            "task_4": 4,
-                            "task_5": 5
+                            "security_group.apply": 19,
+                            "security_group.check": 14,
+                            "security_group.copy": 16,
+                            "security_group.plan": 18,
+                            "security_group.skip": 15,
+                            "security_group.storage_and_creds": 17,
+                            "subnet.apply": 13,
+                            "subnet.check": 8,
+                            "subnet.copy": 10,
+                            "subnet.plan": 12,
+                            "subnet.skip": 9,
+                            "subnet.storage_and_creds": 11,
+                            "terraform_download": 1,
+                            "vpc.apply": 7,
+                            "vpc.check": 2,
+                            "vpc.copy": 4,
+                            "vpc.plan": 6,
+                            "vpc.skip": 3,
+                            "vpc.storage_and_creds": 5
                         },
                         "renameByName": {
                             "run_id\\task_id": "",
@@ -1261,7 +1353,7 @@
                 ]
             },
             "gridPos": {
-                "h": 5,
+                "h": 7,
                 "w": 24,
                 "x": 0,
                 "y": 25
@@ -1366,7 +1458,8 @@
                         "mode": "absolute",
                         "steps": [
                             {
-                                "color": "green"
+                                "color": "green",
+                                "value": null
                             },
                             {
                                 "color": "red",
@@ -1455,7 +1548,8 @@
                                     "mode": "absolute",
                                     "steps": [
                                         {
-                                            "color": "rgba(50, 172, 45, 0.97)"
+                                            "color": "rgba(50, 172, 45, 0.97)",
+                                            "value": null
                                         },
                                         {
                                             "color": "#C4162A",
@@ -1509,13 +1603,6 @@
                                 "value": "시간"
                             }
                         ]
-                    },
-                    {
-                        "matcher": {
-                            "id": "byName",
-                            "options": "status_job"
-                        },
-                        "properties": []
                     }
                 ]
             },
@@ -1523,7 +1610,7 @@
                 "h": 5,
                 "w": 24,
                 "x": 0,
-                "y": 30
+                "y": 32
             },
             "id": 2,
             "links": [],
@@ -1627,7 +1714,8 @@
                         "mode": "absolute",
                         "steps": [
                             {
-                                "color": "green"
+                                "color": "green",
+                                "value": null
                             },
                             {
                                 "color": "red",
@@ -1764,7 +1852,7 @@
                 "h": 8,
                 "w": 24,
                 "x": 0,
-                "y": 35
+                "y": 37
             },
             "id": 8,
             "options": {
@@ -1900,6 +1988,6 @@
     "timezone": "",
     "title": "Airflow monitoring",
     "uid": "Airflow_Monitor",
-    "version": 2,
+    "version": 3,
     "weekStart": ""
 }
