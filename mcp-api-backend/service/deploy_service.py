@@ -154,77 +154,66 @@ async def deploy_infra_from_list(
         "run_id": dag_run_id
     }
 
+async def get_all_deploys(
+    current_user: schemas_users.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    if crud_users.is_master(db, current_user):
+        deploys = crud_deploys.get_all_deploys(db)
+    else:
+        deploys = crud_deploys.get_deploys_by_team(db, current_user.team)
 
+    return deploys
+
+async def get_deploy_detail_by_id(
+    deploy_id: int,
+    current_user: schemas_users.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    deploy = crud_deploys.get_deploy_by_id(db, deploy_id)
+
+    if not deploy:
+        raise HTTPException(
+            status_code=404, detail=f"Deploy {deploy_id} not found"
+        )
+    if not crud_users.is_master(db, current_user):
+        if not check_team_user(current_user.team, [deploy.team]):
+            raise HTTPException(
+                status_code=403, detail=f"팀 {deploy.team} 에 충분한 권한이 없습니다."
+            )
+
+    # get all deploy details by deploy_id
+    deploy_details = crud_deploy_details.get_deploy_details_by_deploy_id(db, deploy_id)
     
-    # Get  credentials by providers supported
-    secreto = check_prefix(
-        db, stack_name=deploy.stack_name, environment=deploy.environment, team=team
-    )
-    # Get info from stack data
-    stack_data = stack(db, stack_name=deploy.stack_name)
-    branch = (
-        stack_data.branch
-        if deploy.stack_branch == "" or deploy.stack_branch == None
-        else deploy.stack_branch
-    )
-    git_repo = stack_data.git_repo
-    tf_ver = stack_data.tf_version
-    check_deploy_exist(db, deploy.name, team,
-                       deploy.environment, deploy.stack_name)
-    check_deploy_task_pending_state(deploy.name, team, deploy.environment)
-    try:
-        # check crontime
-        check_cron_schedule(deploy.start_time)
-        check_cron_schedule(deploy.destroy_time)
-        # push task Deploy to queue and return task_id
-        pipeline_deploy = async_deploy(
-            git_repo,
-            deploy.name,
-            deploy.stack_name,
-            deploy.environment,
-            team,
-            branch,
-            tf_ver,
-            deploy.variables,
-            secreto,
-            deploy.tfvar_file,
-            deploy.project_path,
-            current_user.username,
-        )
-        # Push deploy task data
-        db_deploy = crud_deploys.create_new_deploy(
-            db=db,
-            deploy=deploy,
-            stack_branch=branch,
-            task_id=pipeline_deploy,
-            action="Apply",
-            team=team,
-            user_id=current_user.id,
-            username=current_user.username,
-        )
-        # Push task data
-        db_task = crud_tasks.create_task(
-            db=db,
-            task_id=pipeline_deploy,
-            task_name=f"{deploy.stack_name}-{team}-{deploy.environment}-{deploy.name}",
-            user_id=current_user.id,
-            deploy_id=db_deploy.id,
-            username=current_user.username,
-            team=team,
-            action="Apply",
+    csp_type = crud_stacks.get_stack_by_id(db, deploy_details[0].stack_id).csp_type
+
+    detail_result = []
+    for detail in deploy_details:
+        stack_name = crud_stacks.get_stack_by_id(db, detail.stack_id).stack_name
+        detail_result.append(
+            schemas_deploy.DeployDetailResponse(
+                detail_id=detail.id,
+                stack_name=stack_name,
+                tfvar_file=detail.tfvar_file,
+                variables=detail.variables,
+            )
         )
 
-        return {"task": db_task}
-    except Exception as err:
-        raise HTTPException(status_code=400, detail=f"{err}")
-    finally:
-        try:
-            # async_schedule_delete(db_deploy.id, team)
-            # # Add schedule
-            # async_schedule_add(db_deploy.id, team)
-            ...
-        except Exception as err:
-            print(err)
+    result = schemas_deploy.DeployResponsewithDetail(
+        deploy_id=deploy.deploy_id,
+        deploy_name=deploy.deploy_name,
+        start_time=deploy.start_time,
+        destroy_time=deploy.destroy_time,
+        user_id=deploy.user_id,
+        username=deploy.username,
+        team=deploy.team,
+        environment=deploy.environment,
+        detail_cnt=deploy.detail_cnt,
+        csp_type=csp_type,
+        detail_data=detail_result,
+    )
+
+    return result
 
 
 async def get_deploy_status(

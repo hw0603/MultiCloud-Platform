@@ -13,6 +13,14 @@ class DeployDetailCreate(BaseModel):
     )
     variables: dict
 
+class DeployDetailResponse(BaseModel):
+    detail_id: int
+    stack_name: constr(strip_whitespace=True)
+    tfvar_file: Optional[constr(strip_whitespace=True)] = Field(
+        "", example="terraform.tfvars"
+    )
+    variables: dict
+
 
 class DeployDetail(DeployDetailBase):
     id: int

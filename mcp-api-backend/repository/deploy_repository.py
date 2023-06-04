@@ -115,11 +115,11 @@ def create_new_deploy(
 #         raise err
 
 
-# def get_deploy_by_id(db: Session, deploy_id: int):
-#     try:
-#         return db.query(models.Deploy).filter(models.Deploy.id == deploy_id).first()
-#     except Exception as err:
-#         raise err
+def get_deploy_by_id(db: Session, deploy_id: int):
+    try:
+        return db.query(models.Deploy).filter(models.Deploy.deploy_id == deploy_id).first()
+    except Exception as err:
+        raise err
 
 
 # def get_deploy_by_name(db: Session, deploy_name: str):
@@ -167,11 +167,17 @@ def create_new_deploy(
 #         raise err
 
 
-# def get_all_deploys(db: Session, skip: int = 0, limit: int = 100):
-#     try:
-#         return db.query(models.Deploy).offset(skip).limit(limit).all()
-#     except Exception as err:
-#         raise err
+def get_deploy_by_team(db: Session, team: str):
+    try:
+        return db.query(models.Deploy).filter(models.Deploy.team == team).all()
+    except Exception as err:
+        raise err
+
+def get_all_deploys(db: Session, skip: int = 0, limit: int = 100):
+    try:
+        return db.query(models.Deploy).offset(skip).limit(limit).all()
+    except Exception as err:
+        raise err
 
 
 # def get_all_deploys_by_team(db: Session, team: str, skip: int = 0, limit: int = 100):
