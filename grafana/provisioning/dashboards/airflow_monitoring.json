@@ -77,7 +77,7 @@
                                     "text": "스케줄링 완료"
                                 },
                                 "skipped": {
-                                    "color": "#00ffe1",
+                                    "color": "text",
                                     "index": 7,
                                     "text": "건너뜀"
                                 },
@@ -278,7 +278,6 @@
                     }
                 }
             ],
-            "transparent": true,
             "type": "table"
         },
         {
@@ -950,7 +949,6 @@
                     }
                 }
             ],
-            "transparent": true,
             "type": "table"
         },
         {
@@ -1236,7 +1234,6 @@
                     }
                 }
             ],
-            "transparent": true,
             "type": "table"
         },
         {
@@ -1433,7 +1430,6 @@
                     }
                 }
             ],
-            "transparent": true,
             "type": "table"
         },
         {
@@ -1687,7 +1683,6 @@
                     }
                 }
             ],
-            "transparent": true,
             "type": "table"
         },
         {
@@ -1928,7 +1923,6 @@
                     }
                 }
             ],
-            "transparent": true,
             "type": "table"
         }
     ],
@@ -1988,6 +1982,6 @@
     "timezone": "",
     "title": "Airflow monitoring",
     "uid": "Airflow_Monitor",
-    "version": 3,
+    "version": 5,
     "weekStart": ""
 }
