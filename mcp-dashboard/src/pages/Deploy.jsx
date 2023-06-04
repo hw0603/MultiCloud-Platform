@@ -1,15 +1,26 @@
 import React, { useLayoutEffect, useMemo, useState } from "react";
-import { Button, Table, Modal } from "../components";
+import { Button, Table, Modal, ParameterCarousel } from "../components";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 import axios from "axios";
 // import { BsFillTrashFill } from "react-icons/bs"
-// import { BsSearch } from "react-icons/bs"
+import { BsSearch } from "react-icons/bs"
+
+const ModalComponentDeployParameter = ({ deployData }) => {
+    console.log("deployData", deployData);
+    return (
+        <>
+            <div className="flex justify-center items-center">
+                <ParameterCarousel deployDetails={deployData} />
+            </div>
+        </>
+    );
+}
 
 const Deploy = () => {
     const { mainColor, disabledColor, base_url, isModalOpen, setIsModalOpen, checkedInputs, setCheckedInputs } = useStateContext();
     const [deploys, setDeploys] = useState([]);
-    // const [stackData, setStackData] = useState();
+    const [deployData, setDeployData] = useState();
     const navigate = useNavigate();
 
     const getDeployList = () => {
@@ -21,6 +32,7 @@ const Deploy = () => {
             },
         })
             .then((response) => {
+                console.log(response);
                 setDeploys(response.data);
             })
             .catch((error) => {
@@ -28,82 +40,67 @@ const Deploy = () => {
             })
     }
 
-    // const deleteStack = (stack_name) => {
-    //     axios({
-    //         method: "DELETE",
-    //         url: `${base_url}/api/v1/stacks/${stack_name}`,
-    //         headers: {
-    //             "Authorization": localStorage.getItem("accessToken")
-    //         },
-    //     })
-    //         .then((resp) => {
-    //             console.log("resp", resp)
-    //             alert("선택한 스택을 삭제하였습니다.")
-    //             // getStackList();
-    //         })
-    //         .catch((error) => {
-    //             console.log(error)
-    //         })
-    // }
+    const getDeployInfo = (id) => {
+        axios({
+            method: "GET",
+            url: `${base_url}/api/v1/deploy/${id}`,
+            headers: {
+                "Authorization": localStorage.getItem("accessToken")
+            },
+        })
+            .then((resp) => {
+                console.log(resp);
+                setDeployData(resp.data.detail_data);
+                setIsModalOpen(true);
+            })
+            .catch((error) => {
+                console.log("error", error);
+            })
+    }
 
     const columns = [
         {
-            accessor: "stack_id",
+            accessor: "deploy_id",
             Header: "ID",
         },
         {
-            accessor: "stack_name",
-            Header: "스택명"
+            accessor: "deploy_name",
+            Header: "배포명"
         },
         {
-            accessor: "description",
-            Header: "설명"
+            accessor: "environment",
+            Header: "Environment"
         },
         {
-            accessor: "csp_type",
-            Header: "CSP 타입"
+            accessor: "start_time",
+            Header: "Start time"
         },
         {
-            accessor: "stack_type",
-            Header: "스택 타입"
+            accessor: "destroy_time",
+            Header: "Destroy time"
         },
         {
             accessor: "created_at",
             Header: "생성 날짜"
         },
-        // {
-        //     accessor: "delete",
-        //     Header: "삭제",
-        //     Cell: tableProps => (
-        //         <div className="flex items-center justify-center">
-        //             <button onClick={() => {
-        //                 if (window.confirm("선택한 스택을 삭제하시겠습니까?")) {
-        //                     deleteStack(tableProps.data[tableProps.row.index].stack_name)
-        //                 }
-        //             }} style={{ color: "black", }}>
-        //                 <BsFillTrashFill />
-        //             </button>
-        //         </div>
-        //     ),
-        //     minWidth: 140,
-        //     width: 200,
-        // },
-        // {
-        //     accessor: "parameters",
-        //     Header: "변수 확인",
-        //     Cell: tableProps => (
-        //         <div className="flex items-center justify-center">
-        //             <button onClick={() => {
-        //                 setStackData(tableProps.data[tableProps.row.index]);
-        //                 setIsModalOpen(true);
-        //             }} style={{ color: "black", }}>
-        //                 <BsSearch />
-        //             </button>
-        //         </div>
-        //     ),
-        //     minWidth: 140,
-        //     width: 200,
-        // },
+        {
+            accessor: "parameters",
+            Header: "변수 확인",
+            Cell: tableProps => (
+                <div className="flex items-center justify-center">
+                    <button onClick={() => {
+                        // setDeployData(tableProps.data[tableProps.row.index]);
+                        console.log(tableProps.data[tableProps.row.index].deploy_id);
+                        getDeployInfo(tableProps.data[tableProps.row.index].deploy_id)
+
+                    }} style={{ color: "black", }}>
+                        <BsSearch />
+                    </button>
+                </div>
+            ),
+            minWidth: 140,
+            width: 200,
+        },
     ];
 
     useLayoutEffect(() => {
@@ -133,6 +130,8 @@ const Deploy = () => {
 
                 <Table columns={columns} data={deploys} />
             </div>
+
+            {isModalOpen && <Modal title="배포 세부사항" width="1/2"><ModalComponentDeployParameter deployData={deployData} /></Modal>}
         </>
     );
 };
