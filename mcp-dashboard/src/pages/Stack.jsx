@@ -272,8 +272,15 @@ const Stack = () => {
                                 text="새 스택 생성"
                                 borderRadius="10px"
                                 onClickFunc={() => {
-                                    ModalContentType = 1;
-                                    setIsModalOpen(!isModalOpen);
+                                    if (localStorage.getItem("role")) {
+                                        if (localStorage.getItem("role").split(",").includes("user")) {
+                                            alert("일반 사용자는 스택 생성이 불가능합니다.");
+                                        }
+                                        else {
+                                            ModalContentType = 1;
+                                            setIsModalOpen(!isModalOpen);
+                                        }
+                                    }
                                 }}
                             />
                         </div>
