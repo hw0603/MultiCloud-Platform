@@ -3,7 +3,7 @@ import { Button, Table, Modal, ParameterCarousel } from "../components";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 import axios from "axios";
-// import { BsFillTrashFill } from "react-icons/bs"
+import { BsFillTrashFill } from "react-icons/bs"
 import { BsSearch } from "react-icons/bs"
 
 const ModalComponentDeployParameter = ({ deployData }) => {
@@ -114,6 +114,25 @@ const Deploy = () => {
                     </button>
                 </div>
             ),
+        },
+        {
+            accessor: "delete",
+            Header: "삭제",
+            Cell: tableProps => (
+                <div className="flex items-center justify-center">
+                    <button onClick={() => {
+                        if (window.confirm("선택한 배포를 삭제하시겠습니까?")) {
+                            setTimeout(() => {
+                                alert("삭제 작업이 등록되었습니다.");
+                            }, 1000);
+                        }
+                    }} style={{ color: "black", }}>
+                        <BsFillTrashFill />
+                    </button>
+                </div>
+            ),
+            minWidth: 140,
+            width: 200,
         },
     ];
 
