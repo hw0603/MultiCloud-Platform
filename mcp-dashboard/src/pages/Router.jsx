@@ -1,13 +1,20 @@
-import React from "react";
-import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, Navigate, BrowserRouter, useNavigate } from "react-router-dom";
 import { Login, Layout } from "./";
 import { useStateContext } from "../contexts/ContextProvider";
 
 const Router = () => {
   const { isAuthorized } = useStateContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      navigate("/login");
+    }
+  }, []);
+  
   return (
     <div>
-      {!isAuthorized && (<Navigate to="/login" replace={true} />)}
       <Routes>
         <Route exact path="/login" element={<Login />} />
         <Route path="*" element={<Layout />} />
