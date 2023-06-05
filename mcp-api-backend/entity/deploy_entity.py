@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field, constr
-from entity.deploy_detail_entity import DeployDetailCreate, DeployDetailDestroy
+from entity.deploy_detail_entity import DeployDetailCreate
 
 
 class DeployBase(BaseModel):
