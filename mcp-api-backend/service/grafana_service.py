@@ -209,8 +209,8 @@ dashboard_json_str = '''{
                     "table": "aws_cloudwatch"
                 }
             ],
-            "title": "CPU 사용량",
-            "transparent": true,
+            "title": "",
+            "transparent": false,
             "type": "timeseries"
         },
         {
@@ -392,8 +392,8 @@ dashboard_json_str = '''{
                     "table": "aws_cloudwatch"
                 }
             ],
-            "title": "네트워크 사용량",
-            "transparent": true,
+            "title": "",
+            "transparent": false,
             "type": "timeseries"
         },
         {
@@ -575,8 +575,8 @@ dashboard_json_str = '''{
                     "table": "aws_cloudwatch"
                 }
             ],
-            "title": "EBSWriteBytes",
-            "transparent": true,
+            "title": "",
+            "transparent": false,
             "type": "timeseries"
         }
     ],
