@@ -1,4 +1,6 @@
+from turtle import update
 from fastapi import Depends, HTTPException, Response, status
+from numpy import stack
 from sqlalchemy.orm import Session
 
 from entity import deploy_entity as schemas_deploy
@@ -6,6 +8,7 @@ from repository import deploy_repository as crud_deploys
 from repository import deploy_detail_repository as crud_deploy_details
 from repository import stack_repository as crud_stacks
 from db.connection import get_db
+from db.model.deploy_model import Deploy
 from repository import activity_logs_repository as crud_activity
 from src.shared.security import deps
 
@@ -239,6 +242,123 @@ async def get_deploy_status(
         )
 
     return result
+
+async def destroy_infra_from_list_by_id(
+    destroy: schemas_deploy.DeployDestroy,
+    current_user: schemas_users.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    deploy_info: Deploy = crud_deploys.get_deploy_by_name_team(db=db, team=destroy.team, deploy_name=destroy.deploy_name, environment=destroy.environment)
+    if not deploy_info:
+        raise HTTPException(
+            status_code=404,
+            detail=f"{destroy.deploy_name}은(는) 존재하지 않는 배포 ID입니다."
+        )
+    
+    team = deploy_info.team
+    if not check_team_user(team, current_user.team):
+        raise HTTPException(
+            status_code=403, detail=f"팀 {team}에 충분한 권한이 없습니다."
+        )
+
+    target_stack = crud_stacks.get_stack_by_name(db=db, stack_name=destroy.stack_name)
+    if not target_stack:
+        raise HTTPException(
+            status_code=403, detail=f"스택 {destroy.stack_name}은(는) 존재하지 않는 스택입니다."
+        )
+
+    csp_type = target_stack.csp_type
+    if (csp_type == "aws"):
+        res = crud_aws.get_credentials_aws_profile(db, destroy.environment, team)
+        provider = {
+            "access_key_id": res.get("access_key"),
+            "secret_access_key": res.get("secret_access_key"),
+        }
+    elif (csp_type == "gcp"):
+        res = crud_gcp.get_team_gcloud_profile(db, team, destroy.environment)
+        provider = {
+            "credentials": res.credentials,
+        }
+    elif (csp_type == "azure"):
+        res = crud_azure.get_team_azure_profile(db, team, destroy.environment)
+        provider = {
+            "client_id": res.client_id,
+            "client_secret": res.client_secret,
+            "tenant_id": res.tenant_id,
+            "subscription_id": res.subscription_id,
+        }
+    elif (csp_type == "custom"):
+        res = crud_custom_provider.get_team_custom_provider_profile(db, team, destroy.environment)
+        provider = {
+            "credentials": res.credentials,
+        }
+    
+    if not (provider):
+        raise HTTPException(
+            status_code=404, detail=f"Provider 정보를 찾을 수 없습니다."
+        )
+
+    target_deploy_detail = None
+    for deploy_detail in deploy_info.deploy_detail_rel:
+        print(deploy_detail.stack_id)
+        print(target_stack.stack_id)
+        if deploy_detail.stack_id == target_stack.stack_id:
+            target_deploy_detail = deploy_detail
+    
+    if not target_deploy_detail:
+        raise HTTPException(
+            status_code=404,
+            detail="일치하는 배포 기록을 찾을 수 없습니다."
+        )
+    
+    airflow_conf = {
+        "stack": {
+            "stack_name": target_stack.stack_name,
+            "csp_type": target_stack.csp_type,
+            "stack_type": target_stack.stack_type,
+            "tf_version": target_stack.tf_version
+        },
+        "environment": destroy.environment,
+        "team": destroy.team,
+        "deploy_name": destroy.deploy_name,
+    }
+    trigger_result = airflow_service.trigger_dag(
+        dag_id="mcp_destroy_dag",
+        conf=airflow_conf
+    )
+
+    dag_run_id = trigger_result.get("dag_run_id", None)
+    assert airflow_conf == trigger_result.get("conf", {})
+    assert dag_run_id is not None
+
+    # DeployDetail 삭제
+    # detail_del_res = crud_deploy_details.delete_deploy_detail_by_id(db=db, deploy_detail_id=target_deploy_detail.id)
+    
+    # task 데이블 업데이트
+    db_task = crud_tasks.create_task(
+        db=db,
+        task_id=dag_run_id,
+        task_name=f"{destroy.stack_name}-{team}-{destroy.environment}-{destroy.deploy_name}",
+        user_id=current_user.id,
+        deploy_id=deploy_info.deploy_id,
+        username=current_user.username,
+        team=team,
+        action="Destroy"
+    )
+
+    # activity 로깅
+    crud_activity.create_activity_log(
+        db=db,
+        username=current_user.username,
+        team=current_user.team,
+        action=f"인프라 destroy(deploy name: {deploy_info.deploy_name}, stack name: {target_stack.stack_name})"
+    )
+
+    return {
+        "deploy_name": deploy_info.deploy_name,
+        "stack_name": target_stack.stack_name,
+        "run_id": dag_run_id,
+    }
 
 async def get_deploy_logs(
     run_id: str,

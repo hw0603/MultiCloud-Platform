@@ -65,3 +65,9 @@ class Deploy(DeployBase):
 
     class Config:
         orm_mode = True
+
+class DeployDestroy(BaseModel):
+    deploy_name: str
+    team: str
+    stack_name: str
+    environment: str

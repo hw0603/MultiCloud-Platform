@@ -23,11 +23,11 @@ async def deploy_infra_from_list(
 #     return update_deploy
 
 
-# @router.put("/{deploy_id}", status_code=202)
-# async def destroy_infra(
-#     destroy_deploy: schemas_deploy.DeployBase = Depends(deploy_service.destroy_infra),
-# ):
-#     return destroy_deploy
+@router.put("/", status_code=202)
+async def destroy_infra(
+    destroy_deploy: schemas_deploy.DeployBase = Depends(deploy_service.destroy_infra_from_list_by_id),
+):
+    return destroy_deploy
 
 
 # @router.delete("/{deploy_id}")

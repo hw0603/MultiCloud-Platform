@@ -34,6 +34,19 @@ def create_new_deploy(
     except Exception as err:
         raise err
 
+# def update_deploy_cnt(
+#         db: Session,
+#         deploy_id: int
+# ):
+#     db_deploy = db.query(models.Deploy).filter(models.Deploy.deploy_id == deploy_id).first()
+#     db_deploy.detail_cnt -= 1
+#     try:
+#         db.add(db_deploy)
+#         db.commit()
+#         db.refresh(db_deploy)
+#         return db_deploy
+#     except Exception as err:
+#         raise err
 
 # def update_deploy(
 #     db: Session,
@@ -105,12 +118,12 @@ def create_new_deploy(
 
 
 # def delete_deploy_by_id(db: Session, deploy_id: int, team: str):
-#     db.query(models.Deploy).filter(models.Deploy.id == deploy_id).filter(
+#     db.query(models.Deploy).filter(models.Deploy.deploy_id == deploy_id).filter(
 #         models.Deploy.team == team
 #     ).delete()
 #     try:
 #         db.commit()
-#         return {models.Deploy.id: "deleted", "Deploy_id": deploy_id}
+#         return {models.Deploy.deploy_id: "deleted", "Deploy_id": deploy_id}
 #     except Exception as err:
 #         raise err
 
@@ -140,32 +153,31 @@ def get_deploy_by_id(db: Session, deploy_id: int):
 #         raise err
 
 
-# def get_deploy_by_id_team(db: Session, deploy_id: int, team: str):
-#     try:
-#         return (
-#             db.query(models.Deploy)
-#             .filter(models.Deploy.id == deploy_id)
-#             .filter(models.Deploy.team == team)
-#             .first()
-#         )
-#     except Exception as err:
-#         raise err
+def get_deploy_by_id_team(db: Session, deploy_id: int, team: str):
+    try:
+        return (
+            db.query(models.Deploy)
+            .filter(models.Deploy.id == deploy_id)
+            .filter(models.Deploy.team == team)
+            .first()
+        )
+    except Exception as err:
+        raise err
 
 
-# def get_deploy_by_name_team(
-#     db: Session, deploy_name: str, team: str, environment: str
-# ):
-#     try:
-#         return (
-#             db.query(models.Deploy)
-#             .filter(models.Deploy.name == deploy_name)
-#             .filter(models.Deploy.team == team)
-#             .filter(models.Deploy.environment == environment)
-#             .first()
-#         )
-#     except Exception as err:
-#         raise err
-
+def get_deploy_by_name_team(
+    db: Session, deploy_name: str, team: str, environment: str
+):
+    try:
+        return (
+            db.query(models.Deploy)
+            .filter(models.Deploy.deploy_name == deploy_name)
+            .filter(models.Deploy.team == team)
+            .filter(models.Deploy.environment == environment)
+            .first()
+        )
+    except Exception as err:
+        raise err
 
 def get_deploy_by_team(db: Session, team: str):
     try:
