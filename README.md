@@ -63,7 +63,7 @@
 <br>
 
 ## 최종결과
-(link)  
+[![퍼블릭 기반 멀티 클라우드 플랫폼](http://img.youtube.com/vi/jtl9-90ToZM/0.jpg)](https://youtu.be/jtl9-90ToZM)
 <br>
 
 ## 기대효과
