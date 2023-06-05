@@ -174,7 +174,14 @@ const GCP = () => {
                         text="새 프로바이더 생성"
                         borderRadius="10px"
                         onClickFunc={() => {
-                            setIsModalOpen(!isModalOpen);
+                            if (localStorage.getItem("role")) {
+                                if (localStorage.getItem("role").split(",").includes("user")) {
+                                    alert("일반 사용자는 프로바이더 생성이 불가능합니다.");
+                                }
+                                else {
+                                    setIsModalOpen(!isModalOpen);
+                                }
+                            }
                         }}
                     />
                 </div>

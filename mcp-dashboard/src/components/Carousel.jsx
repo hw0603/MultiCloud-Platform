@@ -107,8 +107,24 @@ const Carousel = ({ stacks }) => {
                                 {stacks.map((stack, i) => {
                                     return (
                                         <div key={i} className="w-500 flex-none bg-white border-2 rounded-2xl p-6">
-                                            <div className="font-bold text-2xl">
-                                                {stack.stack_name}
+                                            <div className="flex justify-between items-center">
+                                                <div className="font-bold text-2xl ">
+                                                    {stack.stack_name}
+                                                </div>
+                                                <div>
+                                                <Button
+                                                        color="white"
+                                                        bgColor={mainColor}
+                                                        text="변수 파일 직접 업로드"
+                                                        borderRadius="10px"
+                                                        onClickFunc={() => {
+                                                            document.getElementById("fileUpload").click();
+                                                        }}
+                                                    />
+                                                    
+                                                    <input type="file" name="ss" id="fileUpload" className="hidden"></input>
+                                                </div>
+
                                             </div>
                                             <div className="gap-2 flex-col mt-4 flex">
                                                 {

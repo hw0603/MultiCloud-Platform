@@ -72,6 +72,8 @@ const ModalComponentCreateStack = () => {
                         <option value="key_pair">key_pair</option>
                         <option value="nat_gateway">nat_gateway</option>
                         <option value="route_table">route_table</option>
+                        <option value="route_table_association">route_table_association</option>
+                        <option value="route_rule">route_rule</option>
                         <option value="security_group">security_group</option>
                         <option value="subnet">subnet</option>
                         <option value="vpc">vpc</option>
@@ -270,8 +272,15 @@ const Stack = () => {
                                 text="새 스택 생성"
                                 borderRadius="10px"
                                 onClickFunc={() => {
-                                    ModalContentType = 1;
-                                    setIsModalOpen(!isModalOpen);
+                                    if (localStorage.getItem("role")) {
+                                        if (localStorage.getItem("role").split(",").includes("user")) {
+                                            alert("일반 사용자는 스택 생성이 불가능합니다.");
+                                        }
+                                        else {
+                                            ModalContentType = 1;
+                                            setIsModalOpen(!isModalOpen);
+                                        }
+                                    }
                                 }}
                             />
                         </div>
