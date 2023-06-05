@@ -1,12 +1,13 @@
 import React, { useLayoutEffect, useState } from "react";
 import { MdOutlineCancel } from "react-icons/md";
-
+import { useNavigate } from "react-router-dom";
 import { Button } from ".";
 import { useStateContext } from "../contexts/ContextProvider";
 import profilePic from "../data/profilePic.png";
 import axios from "axios";
 
 const UserProfile = () => {
+  const navigate = useNavigate();
   const { mainColor, initialState, setIsClicked, setIsAuthorized, base_url } = useStateContext();
   const roles = localStorage.getItem("role").split(',');
   const [email, setEmail] = useState("");
@@ -80,6 +81,7 @@ const UserProfile = () => {
             setIsAuthorized(false);
             localStorage.clear();
             setIsClicked(initialState);
+            navigate("/login");
           }}
         />
       </div>
