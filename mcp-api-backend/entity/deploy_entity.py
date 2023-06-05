@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field, constr
-from entity.deploy_detail_entity import DeployDetailCreate
+from entity.deploy_detail_entity import DeployDetailCreate, DeployDetailDestroy
 
 
 class DeployBase(BaseModel):
@@ -47,3 +47,9 @@ class Deploy(DeployBase):
 
     class Config:
         orm_mode = True
+
+class DeployDestroy(BaseModel):
+    deploy_name: str
+    team: str
+    stack_name: str
+    environment: str
