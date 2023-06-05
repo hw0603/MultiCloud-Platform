@@ -11,12 +11,12 @@ const Layout = () => {
                     <Sidebar />
                 </div>
 
-                <div className="dark:bg-main-dark-bg  bg-main-bg min-h-screen md:ml-72 w-full">
+                <div className="bg-main-bg min-h-screen md:ml-72 w-full flex flex-col">
                     <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full border-b-2">
                         <Navbar />
                     </div>
 
-                    <div className="w-full h-full">
+                    <div className="flex-1">
                         <BasePage />
                     </div>
                 </div>

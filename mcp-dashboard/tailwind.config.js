@@ -24,6 +24,8 @@ module.exports = {
         color: "rgba(0, 0, 0, 0.1)",
       },
       width: {
+        100: "100px",
+        160: "160px",
         400: "400px",
         500: "500px",
         600: "600px",
@@ -36,7 +38,9 @@ module.exports = {
       },
       height: {
         80: "80px",
+        100: "100px",
         500: "500px",
+        450: "450px"
       },
       minHeight: {
         590: "590px",
